@@ -1,0 +1,39 @@
+@model AdminOptionEditViewModel
+
+<form method="post" class="product-card p-3 p-lg-4">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="ProductId" />
+    <input type="hidden" asp-for="Id" />
+
+    <div class="row g-3">
+        <div class="col-md-4">
+            <label asp-for="GroupName" class="form-label"></label>
+            <input asp-for="GroupName" class="form-control" />
+            <span asp-validation-for="GroupName" class="text-danger"></span>
+        </div>
+        <div class="col-md-4">
+            <label asp-for="PriceDelta" class="form-label"></label>
+            <input asp-for="PriceDelta" class="form-control" />
+            <span asp-validation-for="PriceDelta" class="text-danger"></span>
+        </div>
+        <div class="col-md-6">
+            <label asp-for="NameDe" class="form-label"></label>
+            <input asp-for="NameDe" class="form-control" />
+            <span asp-validation-for="NameDe" class="text-danger"></span>
+        </div>
+        <div class="col-md-6">
+            <label asp-for="NameEn" class="form-label"></label>
+            <input asp-for="NameEn" class="form-control" />
+            <span asp-validation-for="NameEn" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="d-flex gap-2 mt-4">
+        <button type="submit" class="btn btn-primary">Speichern</button>
+        <a class="btn btn-outline-secondary" asp-action="ProductOptions" asp-route-id="@Model.ProductId">Abbrechen</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

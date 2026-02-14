@@ -1,0 +1,63 @@
+@model ProductConfiguratorViewModel
+@{
+    ViewData["Title"] = Model.Product.LocalizedName(Model.Language);
+}
+
+<a class="btn btn-link px-0 mb-3" asp-controller="Home" asp-action="Index" asp-route-lang="@Model.Language">@(Model.Language == "en" ? "Back to catalog" : "Zurueck zum Katalog")</a>
+
+<div class="row g-4">
+    <div class="col-lg-5">
+        <img src="@Model.Product.ImageUrl" alt="@Model.Product.LocalizedName(Model.Language)" class="detail-image" />
+        <div class="product-card mt-3 p-3">
+            <small class="text-secondary">@Model.Product.Sku</small>
+            <h1 class="h3 mt-1">@Model.Product.LocalizedName(Model.Language)</h1>
+            <p>@Model.Product.LocalizedDescription(Model.Language)</p>
+            <p class="mb-0"><strong>Basis: @Model.Product.BasePrice.ToString("N0") EUR</strong></p>
+        </div>
+    </div>
+
+    <div class="col-lg-7">
+        <form method="post" class="product-card p-3 p-lg-4">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Language" />
+            <input type="hidden" asp-for="Product.Id" />
+            <h2 class="h5 mb-3">@(Model.Language == "en" ? "Select modules" : "Zusatzbausteine waehlen")</h2>
+
+            @foreach (var group in Model.Product.Options.GroupBy(o => o.GroupName))
+            {
+                <div class="mb-3">
+                    <h3 class="h6 text-uppercase text-secondary">@group.Key</h3>
+                    @foreach (var option in group)
+                    {
+                        var isChecked = Model.SelectedOptionIds.Contains(option.Id);
+                        <div class="form-check option-item p-2 rounded">
+                            <input class="form-check-input" type="checkbox" name="SelectedOptionIds" value="@option.Id" checked="@isChecked" id="opt_@option.Id" />
+                            <label class="form-check-label w-100" for="opt_@option.Id">
+                                <span>@option.LocalizedName(Model.Language)</span>
+                                <span class="float-end">+@option.PriceDelta.ToString("N0") EUR</span>
+                            </label>
+                        </div>
+                    }
+                </div>
+            }
+
+            <button type="submit" class="btn btn-primary">@(Model.Language == "en" ? "Calculate price" : "Preis berechnen")</button>
+        </form>
+
+        @if (Model.Configured is not null)
+        {
+            <section class="product-card p-3 p-lg-4 mt-3">
+                <h2 class="h5">@(Model.Language == "en" ? "Your configuration" : "Deine Konfiguration")</h2>
+                <ul class="mb-3">
+                    @foreach (var option in Model.Configured.SelectedOptions)
+                    {
+                        <li>@option.LocalizedName(Model.Language) (+@option.PriceDelta.ToString("N0") EUR)</li>
+                    }
+                </ul>
+                <div class="alert alert-light mb-0">
+                    <strong>@(Model.Language == "en" ? "Total" : "Gesamtpreis"): @Model.Configured.TotalPrice.ToString("N0") EUR</strong>
+                </div>
+            </section>
+        }
+    </div>
+</div>

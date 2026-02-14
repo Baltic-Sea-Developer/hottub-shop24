@@ -1,0 +1,41 @@
+@model IReadOnlyList<HotTubProduct>
+@{
+    ViewData["Title"] = "Admin";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">Produktverwaltung</h1>
+    <a class="btn btn-primary" asp-action="CreateProduct">Neues Produkt</a>
+</div>
+
+<div class="table-responsive product-card p-2">
+    <table class="table table-hover mb-0 align-middle">
+        <thead>
+            <tr>
+                <th>SKU</th>
+                <th>Name (DE)</th>
+                <th>Basispreis</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Sku</td>
+                <td>@item.NameDe</td>
+                <td>@item.BasePrice.ToString("N0") EUR</td>
+                <td class="text-end">
+                    <a class="btn btn-sm btn-outline-primary" asp-action="EditProduct" asp-route-id="@item.Id">Bearbeiten</a>
+                    <a class="btn btn-sm btn-outline-secondary" asp-action="ProductOptions" asp-route-id="@item.Id">Optionen</a>
+                    <form asp-action="DeleteProduct" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@item.Id" />
+                        <button class="btn btn-sm btn-outline-danger" type="submit">Loeschen</button>
+                    </form>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

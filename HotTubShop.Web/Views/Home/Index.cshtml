@@ -1,0 +1,32 @@
+@model HomeIndexViewModel
+@{
+    ViewData["Title"] = Model.Language == "en" ? "Nordic Hot Tubs" : "Nordische Whirlpools";
+}
+
+<section class="hero mb-5">
+    <div class="hero-content">
+        <p class="eyebrow">@(Model.Language == "en" ? "Nordic relaxation at home" : "Nordische Entspannung zuhause")</p>
+        <h1>@(Model.Language == "en" ? "Build your perfect hot tub setup" : "Stelle deinen perfekten Whirlpool zusammen")</h1>
+        <p>@(Model.Language == "en" ? "Choose a base model and customize with flexible modules like heating, lighting and water care." : "Waehle ein Basismodell und konfiguriere es mit flexiblen Bausteinen wie Heizung, Licht und Wasserpflege.")</p>
+    </div>
+</section>
+
+<div class="row g-4">
+    @foreach (var product in Model.Products)
+    {
+        <div class="col-12 col-md-6 col-xl-4">
+            <article class="product-card h-100">
+                <img src="@product.ImageUrl" alt="@product.LocalizedName(Model.Language)" class="product-image" />
+                <div class="p-3 p-lg-4">
+                    <small class="text-secondary">@product.Sku</small>
+                    <h3 class="h5 mt-1">@product.LocalizedName(Model.Language)</h3>
+                    <p class="small mb-3">@product.LocalizedDescription(Model.Language)</p>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <strong>ab @product.BasePrice.ToString("N0") EUR</strong>
+                        <a class="btn btn-primary" asp-controller="Home" asp-action="Product" asp-route-id="@product.Id" asp-route-lang="@Model.Language">@(Model.Language == "en" ? "Configure" : "Konfigurieren")</a>
+                    </div>
+                </div>
+            </article>
+        </div>
+    }
+</div>
