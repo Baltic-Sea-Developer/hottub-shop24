@@ -7,26 +7,36 @@
     <div class="hero-content">
         <p class="eyebrow">@(Model.Language == "en" ? "Nordic relaxation at home" : "Nordische Entspannung zuhause")</p>
         <h1>@(Model.Language == "en" ? "Build your perfect hot tub setup" : "Stelle deinen perfekten Whirlpool zusammen")</h1>
-        <p>@(Model.Language == "en" ? "Choose a base model and customize with flexible modules like heating, lighting and water care." : "Waehle ein Basismodell und konfiguriere es mit flexiblen Bausteinen wie Heizung, Licht und Wasserpflege.")</p>
+        <p>@(Model.Language == "en" ? "Inspired by Scandinavian spa culture: natural materials, calm colors and warm water in fresh air." : "Inspiriert von skandinavischer Spa-Kultur: natuerliche Materialien, ruhige Farben und warmes Wasser an klarer Luft.")</p>
     </div>
 </section>
 
-<div class="row g-4">
-    @foreach (var product in Model.Products)
-    {
-        <div class="col-12 col-md-6 col-xl-4">
-            <article class="product-card h-100">
-                <img src="@product.ImageUrl" alt="@product.LocalizedName(Model.Language)" class="product-image" />
-                <div class="p-3 p-lg-4">
-                    <small class="text-secondary">@product.Sku</small>
-                    <h3 class="h5 mt-1">@product.LocalizedName(Model.Language)</h3>
-                    <p class="small mb-3">@product.LocalizedDescription(Model.Language)</p>
-                    <div class="d-flex align-items-center justify-content-between">
-                        <strong>ab @product.BasePrice.ToString("N0") EUR</strong>
-                        <a class="btn btn-primary" asp-controller="Home" asp-action="Product" asp-route-id="@product.Id" asp-route-lang="@Model.Language">@(Model.Language == "en" ? "Configure" : "Konfigurieren")</a>
+@if (Model.Products.Count == 0)
+{
+    <section class="product-card p-4">
+        <h2 class="h4 mb-2">@(Model.Language == "en" ? "Catalog currently empty" : "Katalog aktuell leer")</h2>
+        <p class="mb-0">@(Model.Language == "en" ? "Please add products in the admin area first." : "Bitte zuerst Produkte im Admin-Bereich anlegen.")</p>
+    </section>
+}
+else
+{
+    <div class="row g-4">
+        @foreach (var product in Model.Products)
+        {
+            <div class="col-12 col-md-6 col-xl-4">
+                <article class="product-card h-100">
+                    <img src="@product.ImageUrl" alt="@product.LocalizedName(Model.Language)" class="product-image" />
+                    <div class="p-3 p-lg-4">
+                        <small class="text-secondary">@product.Sku</small>
+                        <h3 class="h5 mt-1">@product.LocalizedName(Model.Language)</h3>
+                        <p class="small mb-3">@product.LocalizedDescription(Model.Language)</p>
+                        <div class="d-flex align-items-center justify-content-between">
+                            <strong>ab @product.BasePrice.ToString("N0") EUR</strong>
+                            <a class="btn btn-primary" asp-controller="Home" asp-action="Product" asp-route-id="@product.Id" asp-route-lang="@Model.Language">@(Model.Language == "en" ? "Configure" : "Konfigurieren")</a>
+                        </div>
                     </div>
-                </div>
-            </article>
-        </div>
-    }
-</div>
+                </article>
+            </div>
+        }
+    </div>
+}
