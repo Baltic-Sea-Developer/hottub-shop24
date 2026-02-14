@@ -61,9 +61,8 @@ h1, h2, h3, .navbar-brand {
   display: flex;
   align-items: flex-end;
   background:
-    radial-gradient(circle at 10% 15%, rgba(185, 207, 210, 0.35), transparent 35%),
-    radial-gradient(circle at 85% 20%, rgba(232, 220, 203, 0.25), transparent 30%),
-    linear-gradient(155deg, #19363d 0%, #274f57 45%, #1b2f36 100%);
+    linear-gradient(180deg, rgba(8, 18, 19, 0.10), rgba(8, 18, 19, 0.72)),
+    url('/img/nordic-hottub.svg') center/cover no-repeat;
   box-shadow: 0 16px 40px rgba(26, 41, 43, 0.24);
 }
 
