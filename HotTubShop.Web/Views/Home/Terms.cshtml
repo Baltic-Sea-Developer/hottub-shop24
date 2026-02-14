@@ -1,0 +1,38 @@
+@{
+    var lang = (ViewData["Lang"] as string) ?? "de";
+    var isEn = lang == "en";
+    ViewData["Title"] = "AGB";
+}
+
+<section class="product-card p-4 legal-content">
+    <h1>@ViewData["Title"]</h1>
+    <p>
+        @(isEn
+            ? "General Terms and Conditions for consumers (B2C). Replace placeholders and validate legally."
+            : "Allgemeine Geschaeftsbedingungen fuer Verbraucher (B2C). Platzhalter ersetzen und rechtlich pruefen lassen.")
+    </p>
+
+    <h2>1. @(isEn ? "Scope" : "Geltungsbereich")</h2>
+    <p>[Textbaustein fuer B2C Online-Shop]</p>
+
+    <h2>2. @(isEn ? "Contract conclusion" : "Vertragsschluss")</h2>
+    <p>[Darstellung Warenkorbprozess, Bestellschritte, Korrekturmoeglichkeiten, Vertragssprache]</p>
+
+    <h2>3. @(isEn ? "Prices and payment" : "Preise und Zahlung")</h2>
+    <p>[Preisangaben inkl. USt, zusaetzliche Versandkosten, akzeptierte Zahlungsarten, Faelligkeit]</p>
+
+    <h2>4. @(isEn ? "Delivery" : "Lieferung")</h2>
+    <p>[Liefergebiete, Lieferzeiten, Teillieferung, Gefahruebergang bei Verbrauchern]</p>
+
+    <h2>5. @(isEn ? "Retention of title" : "Eigentumsvorbehalt")</h2>
+    <p>[Standardklausel]</p>
+
+    <h2>6. @(isEn ? "Warranty" : "Gewaehrleistung")</h2>
+    <p>[Hinweis auf gesetzliche Maengelhaftung]</p>
+
+    <h2>7. @(isEn ? "Liability" : "Haftung")</h2>
+    <p>[Haftungsklausel fuer Vorsatz/grobe Fahrlaessigkeit/Verletzung von Kardinalpflichten]</p>
+
+    <h2>8. @(isEn ? "Final provisions" : "Schlussbestimmungen")</h2>
+    <p>[Anwendbares Recht, zwingende Verbraucherschutzrechte, Streitbeilegungshinweis]</p>
+</section>

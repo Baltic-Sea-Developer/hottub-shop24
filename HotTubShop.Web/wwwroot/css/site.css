@@ -106,9 +106,27 @@ h1, h2, h3, .navbar-brand {
   background: rgba(255, 255, 255, 0.5);
 }
 
+.legal-content h2 {
+  font-size: 1.15rem;
+  margin-top: 1.5rem;
+}
+
+.legal-content p {
+  line-height: 1.6;
+}
+
 .footer {
   padding: 1.6rem 0;
   border-top: 1px solid rgba(39, 65, 63, 0.12);
+}
+
+.footer a {
+  color: var(--pine);
+  text-decoration: none;
+}
+
+.footer a:hover {
+  text-decoration: underline;
 }
 
 .btn:focus,

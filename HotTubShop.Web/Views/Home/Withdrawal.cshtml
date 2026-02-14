@@ -1,0 +1,39 @@
+@{
+    var lang = (ViewData["Lang"] as string) ?? "de";
+    var isEn = lang == "en";
+    ViewData["Title"] = isEn ? "Right of withdrawal" : "Widerrufsbelehrung";
+}
+
+<section class="product-card p-4 legal-content">
+    <h1>@ViewData["Title"]</h1>
+    <p>
+        @(isEn
+            ? "Template for consumer contracts (distance selling). Review legally before use."
+            : "Vorlage fuer Verbraucher-Fernabsatzvertraege. Vor Verwendung rechtlich pruefen lassen.")
+    </p>
+
+    <h2>@(isEn ? "Cancellation policy" : "Widerrufsrecht")</h2>
+    <p>
+        @(isEn
+            ? "Consumers have the right to withdraw from this contract within 14 days without giving any reason."
+            : "Verbraucher haben das Recht, binnen 14 Tagen ohne Angabe von Gruenden diesen Vertrag zu widerrufen.")
+    </p>
+
+    <h2>@(isEn ? "Withdrawal period" : "Widerrufsfrist")</h2>
+    <p>[Bitte konkrete Fristberechnung und Fristbeginn passend zum Produkttyp ergaenzen]</p>
+
+    <h2>@(isEn ? "Exercise of the right" : "Ausuebung des Widerrufs")</h2>
+    <p>
+        [Name/Firma, Anschrift, E-Mail, optional Fax]<br />
+        @(isEn ? "You can use the attached model withdrawal form." : "Sie koennen dafuer das beigefuegte Muster-Widerrufsformular verwenden.")
+    </p>
+
+    <h2>@(isEn ? "Consequences of withdrawal" : "Folgen des Widerrufs")</h2>
+    <p>[Rueckzahlung, Fristen, Ruecksendekosten, Wertersatz-Regelungen ergaenzen]</p>
+
+    <h2>@(isEn ? "Model withdrawal form" : "Muster-Widerrufsformular")</h2>
+    <p>
+        @(isEn ? "To: [Company, address, email]" : "An: [Firma, Anschrift, E-Mail]")<br />
+        @(isEn ? "I/We hereby give notice that I/We withdraw from my/our contract for the sale of the following goods..." : "Hiermit widerrufe(n) ich/wir den von mir/uns abgeschlossenen Vertrag ueber den Kauf der folgenden Waren...")
+    </p>
+</section>

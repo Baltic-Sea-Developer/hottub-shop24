@@ -1,0 +1,48 @@
+@{
+    var lang = (ViewData["Lang"] as string) ?? "de";
+    var isEn = lang == "en";
+    ViewData["Title"] = isEn ? "Imprint" : "Impressum";
+}
+
+<section class="product-card p-4 legal-content">
+    <h1>@ViewData["Title"]</h1>
+    <p>
+        @(isEn
+            ? "Please replace all placeholders before go-live."
+            : "Bitte alle Platzhalter vor dem Go-live ersetzen.")
+    </p>
+
+    <h2>HotTub Shop 24</h2>
+    <p>
+        [Firmenname]<br />
+        [Rechtsform]<br />
+        [Strasse Hausnummer]<br />
+        [PLZ Ort]<br />
+        [Land]
+    </p>
+
+    <h2>@(isEn ? "Represented by" : "Vertreten durch")</h2>
+    <p>[Vorname Nachname]</p>
+
+    <h2>@(isEn ? "Contact" : "Kontakt")</h2>
+    <p>
+        @(isEn ? "Phone" : "Telefon"): [Telefonnummer]<br />
+        Email: [E-Mail-Adresse]
+    </p>
+
+    <h2>@(isEn ? "Register entry" : "Registereintrag")</h2>
+    <p>
+        @(isEn ? "Commercial register" : "Handelsregister"): [Registergericht]<br />
+        @(isEn ? "Registration number" : "Registernummer"): [Nummer]
+    </p>
+
+    <h2>USt-IdNr.</h2>
+    <p>[DE123456789]</p>
+
+    <h2>@(isEn ? "Consumer dispute resolution" : "Verbraucherstreitbeilegung")</h2>
+    <p>
+        @(isEn
+            ? "Information under section 36 VSBG: [Participation yes/no, if yes: name and address of the consumer arbitration board]."
+            : "Hinweis nach § 36 VSBG: [Teilnahme ja/nein, falls ja: Name und Anschrift der Verbraucherschlichtungsstelle].")
+    </p>
+</section>

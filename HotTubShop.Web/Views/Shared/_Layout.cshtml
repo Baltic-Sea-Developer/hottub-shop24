@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="@LanguageExtensions.NormalizeLanguage(Context.Request.Query["lang"])">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -11,6 +11,7 @@
 <body>
     @{
         var lang = LanguageExtensions.NormalizeLanguage(Context.Request.Query["lang"]);
+        var isEn = lang == "en";
     }
     <header class="main-header">
         <nav class="navbar navbar-expand-lg">
@@ -22,7 +23,7 @@
                 <div class="navbar-collapse collapse justify-content-between" id="mainNav">
                     <ul class="navbar-nav gap-lg-2">
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index" asp-route-lang="@lang">Shop</a>
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index" asp-route-lang="@lang">@(isEn ? "Shop" : "Shop")</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Admin" asp-action="Index">Admin</a>
@@ -44,8 +45,15 @@
     </div>
 
     <footer class="footer text-muted">
-        <div class="container">
-            &copy; 2026 HotTub Shop 24
+        <div class="container d-flex flex-column flex-lg-row justify-content-between gap-2">
+            <span>&copy; 2026 HotTub Shop 24</span>
+            <div class="d-flex flex-wrap gap-3">
+                <a asp-controller="Home" asp-action="Imprint" asp-route-lang="@lang">@(isEn ? "Imprint" : "Impressum")</a>
+                <a asp-controller="Home" asp-action="Privacy" asp-route-lang="@lang">@(isEn ? "Privacy" : "Datenschutz")</a>
+                <a asp-controller="Home" asp-action="Terms" asp-route-lang="@lang">AGB</a>
+                <a asp-controller="Home" asp-action="Withdrawal" asp-route-lang="@lang">@(isEn ? "Withdrawal" : "Widerruf")</a>
+                <a asp-controller="Home" asp-action="ShippingPayment" asp-route-lang="@lang">@(isEn ? "Shipping & Payment" : "Versand & Zahlung")</a>
+            </div>
         </div>
     </footer>
 

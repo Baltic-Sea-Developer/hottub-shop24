@@ -71,6 +71,41 @@ public class HomeController : Controller
         return View(model);
     }
 
+    [HttpGet]
+    public IActionResult Imprint(string? lang)
+    {
+        ViewData["Lang"] = LanguageExtensions.NormalizeLanguage(lang);
+        return View();
+    }
+
+    [HttpGet]
+    public IActionResult Privacy(string? lang)
+    {
+        ViewData["Lang"] = LanguageExtensions.NormalizeLanguage(lang);
+        return View();
+    }
+
+    [HttpGet]
+    public IActionResult Terms(string? lang)
+    {
+        ViewData["Lang"] = LanguageExtensions.NormalizeLanguage(lang);
+        return View();
+    }
+
+    [HttpGet]
+    public IActionResult Withdrawal(string? lang)
+    {
+        ViewData["Lang"] = LanguageExtensions.NormalizeLanguage(lang);
+        return View();
+    }
+
+    [HttpGet]
+    public IActionResult ShippingPayment(string? lang)
+    {
+        ViewData["Lang"] = LanguageExtensions.NormalizeLanguage(lang);
+        return View();
+    }
+
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {

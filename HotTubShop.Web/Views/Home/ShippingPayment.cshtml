@@ -1,0 +1,28 @@
+@{
+    var lang = (ViewData["Lang"] as string) ?? "de";
+    var isEn = lang == "en";
+    ViewData["Title"] = isEn ? "Shipping and payment" : "Versand und Zahlung";
+}
+
+<section class="product-card p-4 legal-content">
+    <h1>@ViewData["Title"]</h1>
+
+    <h2>@(isEn ? "Delivery areas" : "Liefergebiete")</h2>
+    <p>[Deutschland und EU-Lieferlaender konkret benennen, ggf. Ausschluesse]</p>
+
+    <h2>@(isEn ? "Shipping costs" : "Versandkosten")</h2>
+    <p>[Versandkosten nach Land/PLZ/Bordsteinkante/Montage transparent ausweisen]</p>
+
+    <h2>@(isEn ? "Delivery times" : "Lieferzeiten")</h2>
+    <p>[Lieferzeit je Produkt und Land, Hinweis bei Vorkasse]</p>
+
+    <h2>@(isEn ? "Payment methods" : "Zahlungsarten")</h2>
+    <p>[z. B. Vorkasse, Kreditkarte, Klarna, PayPal; ggf. Bonitaetspruefungshinweis]</p>
+
+    <h2>@(isEn ? "Price information" : "Preisangaben")</h2>
+    <p>
+        @(isEn
+            ? "All prices include statutory VAT. Additional shipping costs are shown separately."
+            : "Alle Preise verstehen sich inklusive gesetzlicher Umsatzsteuer. Zusaetzliche Versandkosten werden gesondert ausgewiesen.")
+    </p>
+</section>
