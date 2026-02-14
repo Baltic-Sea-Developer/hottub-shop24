@@ -17,7 +17,7 @@ public class JsonProductCatalogService : IProductCatalogService
 
         if (!File.Exists(_catalogPath))
         {
-            File.WriteAllText(_catalogPath, JsonSerializer.Serialize(CreateSeedData(), JsonOptions));
+            File.WriteAllText(_catalogPath, JsonSerializer.Serialize(new List<HotTubProduct>(), JsonOptions));
         }
     }
 
@@ -120,44 +120,4 @@ public class JsonProductCatalogService : IProductCatalogService
         await JsonSerializer.SerializeAsync(stream, products, JsonOptions);
     }
 
-    private static List<HotTubProduct> CreateSeedData()
-    {
-        return
-        [
-            new HotTubProduct
-            {
-                Id = "arctic-zen",
-                Sku = "HT-ARCTIC-001",
-                NameDe = "Arctic Zen 5",
-                NameEn = "Arctic Zen 5",
-                DescriptionDe = "Kompakter Premium-Whirlpool mit nordischem Holz-Look für bis zu 5 Personen.",
-                DescriptionEn = "Compact premium hot tub with a Nordic timber look for up to 5 people.",
-                ImageUrl = "https://images.unsplash.com/photo-1621535334652-17dbe17f9b5f?auto=format&fit=crop&w=1400&q=80",
-                BasePrice = 7490m,
-                Options =
-                [
-                    new ShopOption { Id = "heater-plus", GroupName = "Heizung", NameDe = "Schnellheizer 6kW", NameEn = "Fast heater 6kW", PriceDelta = 690m },
-                    new ShopOption { Id = "lights-ice", GroupName = "Atmosphaere", NameDe = "LED Nordlicht Paket", NameEn = "Nordic lights package", PriceDelta = 420m },
-                    new ShopOption { Id = "cover-premium", GroupName = "Abdeckung", NameDe = "Premium Thermo-Cover", NameEn = "Premium thermal cover", PriceDelta = 350m }
-                ]
-            },
-            new HotTubProduct
-            {
-                Id = "fjord-lounge",
-                Sku = "HT-FJORD-007",
-                NameDe = "Fjord Lounge 7",
-                NameEn = "Fjord Lounge 7",
-                DescriptionDe = "Groesse fuer die ganze Familie mit extra Liegeplatz und leisem Zirkulationssystem.",
-                DescriptionEn = "Family-sized comfort with a dedicated lounger and low-noise circulation.",
-                ImageUrl = "https://images.unsplash.com/photo-1575429198097-0414ec08e8cd?auto=format&fit=crop&w=1400&q=80",
-                BasePrice = 10390m,
-                Options =
-                [
-                    new ShopOption { Id = "audio", GroupName = "Entertainment", NameDe = "Bluetooth Audio", NameEn = "Bluetooth audio", PriceDelta = 490m },
-                    new ShopOption { Id = "steps", GroupName = "Komfort", NameDe = "Nordic Einstiegstreppe", NameEn = "Nordic access steps", PriceDelta = 210m },
-                    new ShopOption { Id = "salt", GroupName = "Wasserpflege", NameDe = "Salzwasser-System", NameEn = "Salt water system", PriceDelta = 990m }
-                ]
-            }
-        ];
-    }
 }

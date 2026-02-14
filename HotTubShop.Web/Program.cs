@@ -60,6 +60,22 @@ catch (Exception ex)
     app.Logger.LogError(ex, "Identity seeding failed during startup. App will continue running.");
 }
 
+try
+{
+    using var scope = app.Services.CreateScope();
+    var catalog = scope.ServiceProvider.GetRequiredService<IProductCatalogService>();
+    var products = await catalog.GetProductsAsync();
+    var seededIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "arctic-zen", "fjord-lounge" };
+    foreach (var p in products.Where(x => seededIds.Contains(x.Id)))
+    {
+        await catalog.DeleteProductAsync(p.Id);
+    }
+}
+catch (Exception ex)
+{
+    app.Logger.LogError(ex, "Catalog cleanup failed during startup. App will continue running.");
+}
+
 app.Run();
 
 static string ResolveAppDataPath(string contentRootPath)
