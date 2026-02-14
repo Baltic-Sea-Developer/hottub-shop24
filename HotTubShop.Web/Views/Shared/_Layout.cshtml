@@ -25,13 +25,17 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index" asp-route-lang="@lang">@(isEn ? "Shop" : "Shop")</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Admin" asp-action="Index">Admin</a>
-                        </li>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Admin" asp-action="Index">Admin</a>
+                            </li>
+                        }
                     </ul>
-                    <div class="d-flex gap-2 mt-3 mt-lg-0">
+                    <div class="d-flex flex-wrap align-items-center gap-2 mt-3 mt-lg-0">
                         <a class="btn btn-sm @(lang == "de" ? "btn-primary" : "btn-outline-primary")" asp-route-lang="de">DE</a>
                         <a class="btn btn-sm @(lang == "en" ? "btn-primary" : "btn-outline-primary")" asp-route-lang="en">EN</a>
+                        <partial name="_LoginPartial" />
                     </div>
                 </div>
             </div>

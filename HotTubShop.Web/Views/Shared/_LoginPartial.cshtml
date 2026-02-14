@@ -1,0 +1,32 @@
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+@{
+    var lang = LanguageExtensions.NormalizeLanguage(Context.Request.Query["lang"]);
+    var isEn = lang == "en";
+}
+
+<ul class="navbar-nav align-items-lg-center gap-lg-2">
+@if (SignInManager.IsSignedIn(User))
+{
+    <li class="nav-item">
+        <a class="nav-link" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
+            @(isEn ? "Account" : "Konto")
+        </a>
+    </li>
+    <li class="nav-item">
+        <form class="d-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { lang })" method="post">
+            <button type="submit" class="btn btn-sm btn-outline-light">@(isEn ? "Logout" : "Abmelden")</button>
+        </form>
+    </li>
+}
+else
+{
+    <li class="nav-item">
+        <a class="btn btn-sm btn-outline-light" asp-area="Identity" asp-page="/Account/Register">@(isEn ? "Register" : "Registrieren")</a>
+    </li>
+    <li class="nav-item">
+        <a class="btn btn-sm btn-light" asp-area="Identity" asp-page="/Account/Login">@(isEn ? "Login" : "Login")</a>
+    </li>
+}
+</ul>

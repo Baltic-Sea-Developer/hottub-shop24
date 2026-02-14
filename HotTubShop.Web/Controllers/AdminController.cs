@@ -1,10 +1,12 @@
 using HotTubShop.Web.Models;
 using HotTubShop.Web.Services;
 using HotTubShop.Web.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HotTubShop.Web.Controllers;
 
+[Authorize(Roles = "Admin")]
 public class AdminController : Controller
 {
     private readonly IProductCatalogService _catalogService;
