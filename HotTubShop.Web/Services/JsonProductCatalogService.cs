@@ -1,3 +1,4 @@
+using HotTubShop.Web.Infrastructure;
 using System.Text.Json;
 using HotTubShop.Web.Models;
 
@@ -8,9 +9,9 @@ public class JsonProductCatalogService : IProductCatalogService
     private readonly string _catalogPath;
     private static readonly JsonSerializerOptions JsonOptions = new() { WriteIndented = true };
 
-    public JsonProductCatalogService(IWebHostEnvironment env)
+    public JsonProductCatalogService(AppDataPathProvider dataPathProvider)
     {
-        var dataDir = Path.Combine(env.ContentRootPath, "App_Data");
+        var dataDir = dataPathProvider.DataDirectory;
         Directory.CreateDirectory(dataDir);
         _catalogPath = Path.Combine(dataDir, "catalog.json");
 

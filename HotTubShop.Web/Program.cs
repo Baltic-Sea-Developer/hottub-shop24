@@ -1,17 +1,20 @@
 using HotTubShop.Web.Data;
+using HotTubShop.Web.Infrastructure;
 using HotTubShop.Web.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-Directory.CreateDirectory(Path.Combine(builder.Environment.ContentRootPath, "App_Data"));
+
+var appDataPath = ResolveAppDataPath(builder.Environment.ContentRootPath);
+builder.Services.AddSingleton(new AppDataPathProvider { DataDirectory = appDataPath });
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 builder.Services.AddSingleton<IProductCatalogService, JsonProductCatalogService>();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlite($"Data Source={Path.Combine(appDataPath, "auth.db")}"));
 builder.Services.AddDefaultIdentity<IdentityUser>(options =>
     {
         options.SignIn.RequireConfirmedAccount = false;
@@ -48,6 +51,29 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
 
-await IdentitySeeder.SeedAsync(app.Services);
+try
+{
+    await IdentitySeeder.SeedAsync(app.Services);
+}
+catch (Exception ex)
+{
+    app.Logger.LogError(ex, "Identity seeding failed during startup. App will continue running.");
+}
 
 app.Run();
+
+static string ResolveAppDataPath(string contentRootPath)
+{
+    var primary = Path.Combine(contentRootPath, "App_Data");
+    try
+    {
+        Directory.CreateDirectory(primary);
+        return primary;
+    }
+    catch
+    {
+        var fallback = Path.Combine(Path.GetTempPath(), "HotTubShop24", "App_Data");
+        Directory.CreateDirectory(fallback);
+        return fallback;
+    }
+}
