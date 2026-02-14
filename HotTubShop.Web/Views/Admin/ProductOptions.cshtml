@@ -1,4 +1,4 @@
-@model HotTubProduct
+﻿@model HotTubProduct
 @{
     ViewData["Title"] = "Optionen";
 }
@@ -9,8 +9,8 @@
         <small class="text-secondary">@Model.Sku</small>
     </div>
     <div class="d-flex gap-2">
-        <a class="btn btn-outline-secondary" asp-action="Index">Zur�ck</a>
-        <a class="btn btn-primary" asp-action="AddOption" asp-route-productId="@Model.Id">Option hinzufuegen</a>
+        <a class="btn btn-outline-secondary" asp-action="Index">Zurück</a>
+        <a class="btn btn-primary" asp-action="AddOption" asp-route-productId="@Model.Id">Option hinzufügen</a>
     </div>
 </div>
 
@@ -37,7 +37,7 @@
                         @Html.AntiForgeryToken()
                         <input type="hidden" name="productId" value="@Model.Id" />
                         <input type="hidden" name="optionId" value="@option.Id" />
-                        <button class="btn btn-sm btn-outline-danger" type="submit">L�schen</button>
+                        <button class="btn btn-sm btn-outline-danger" type="submit">Löschen</button>
                     </form>
                 </td>
             </tr>
@@ -45,4 +45,5 @@
         </tbody>
     </table>
 </div>
+
 

@@ -1,4 +1,4 @@
-@{
+ï»¿@{
     var lang = (ViewData["Lang"] as string) ?? "de";
     var isEn = lang == "en";
     ViewData["Title"] = "AGB";
@@ -9,31 +9,32 @@
     <p>
         @(isEn
             ? "General Terms and Conditions for consumers (B2C). Replace placeholders and validate legally."
-            : "Allgemeine Geschäftsbedingungen für Verbraucher (B2C). Platzhalter ersetzen und rechtlich pruefen lassen.")
+            : "Allgemeine GeschÃ¤ftsbedingungen fÃ¼r Verbraucher (B2C). Platzhalter ersetzen und rechtlich prÃ¼fen lassen.")
     </p>
 
     <h2>1. @(isEn ? "Scope" : "Geltungsbereich")</h2>
-    <p>[Textbaustein für B2C Online-Shop]</p>
+    <p>[Textbaustein fÃ¼r B2C Online-Shop]</p>
 
     <h2>2. @(isEn ? "Contract conclusion" : "Vertragsschluss")</h2>
-    <p>[Darstellung Warenkorbprozess, Bestellschritte, Korrekturmöglichkeiten, Vertragssprache]</p>
+    <p>[Darstellung Warenkorbprozess, Bestellschritte, KorrekturmÃ¶glichkeiten, Vertragssprache]</p>
 
     <h2>3. @(isEn ? "Prices and payment" : "Preise und Zahlung")</h2>
-    <p>[Preisangaben inkl. USt, zusätzliche Versandkosten, akzeptierte Zahlungsarten, Fälligkeit]</p>
+    <p>[Preisangaben inkl. USt, zusÃ¤tzliche Versandkosten, akzeptierte Zahlungsarten, FÃ¤lligkeit]</p>
 
     <h2>4. @(isEn ? "Delivery" : "Lieferung")</h2>
-    <p>[Liefergebiete, Lieferzeiten, Teillieferung, Gefahrübergang bei Verbrauchern]</p>
+    <p>[Liefergebiete, Lieferzeiten, Teillieferung, GefahrÃ¼bergang bei Verbrauchern]</p>
 
     <h2>5. @(isEn ? "Retention of title" : "Eigentumsvorbehalt")</h2>
     <p>[Standardklausel]</p>
 
-    <h2>6. @(isEn ? "Warranty" : "Gewährleistung")</h2>
-    <p>[Hinweis auf gesetzliche Mängelhaftung]</p>
+    <h2>6. @(isEn ? "Warranty" : "GewÃ¤hrleistung")</h2>
+    <p>[Hinweis auf gesetzliche MÃ¤ngelhaftung]</p>
 
     <h2>7. @(isEn ? "Liability" : "Haftung")</h2>
-    <p>[Haftungsklausel für Vorsatz/grobe Fahrlässigkeit/Verletzung von Kardinalpflichten]</p>
+    <p>[Haftungsklausel fÃ¼r Vorsatz/grobe FahrlÃ¤ssigkeit/Verletzung von Kardinalpflichten]</p>
 
     <h2>8. @(isEn ? "Final provisions" : "Schlussbestimmungen")</h2>
     <p>[Anwendbares Recht, zwingende Verbraucherschutzrechte, Streitbeilegungshinweis]</p>
 </section>
+
 
