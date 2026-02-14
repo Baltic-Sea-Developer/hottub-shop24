@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+Directory.CreateDirectory(Path.Combine(builder.Environment.ContentRootPath, "App_Data"));
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
