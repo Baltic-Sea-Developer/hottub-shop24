@@ -3,7 +3,7 @@
     ViewData["Title"] = Model.Product.LocalizedName(Model.Language);
 }
 
-<a class="btn btn-link px-0 mb-3" asp-controller="Home" asp-action="Index" asp-route-lang="@Model.Language">@(Model.Language == "en" ? "Back to catalog" : "Zurueck zum Katalog")</a>
+<a class="btn btn-link px-0 mb-3" asp-controller="Home" asp-action="Index" asp-route-lang="@Model.Language">@(Model.Language == "en" ? "Back to catalog" : "Zurück zum Katalog")</a>
 
 <div class="row g-4">
     <div class="col-lg-5">
@@ -21,7 +21,7 @@
             @Html.AntiForgeryToken()
             <input type="hidden" asp-for="Language" />
             <input type="hidden" asp-for="Product.Id" />
-            <h2 class="h5 mb-3">@(Model.Language == "en" ? "Select modules" : "Zusatzbausteine waehlen")</h2>
+            <h2 class="h5 mb-3">@(Model.Language == "en" ? "Select modules" : "Zusatzbausteine Wählen")</h2>
 
             @foreach (var group in Model.Product.Options.GroupBy(o => o.GroupName))
             {
@@ -61,3 +61,4 @@
         }
     </div>
 </div>
+

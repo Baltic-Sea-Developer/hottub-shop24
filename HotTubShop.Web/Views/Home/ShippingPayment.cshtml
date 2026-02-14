@@ -8,7 +8,7 @@
     <h1>@ViewData["Title"]</h1>
 
     <h2>@(isEn ? "Delivery areas" : "Liefergebiete")</h2>
-    <p>[Deutschland und EU-Lieferlaender konkret benennen, ggf. Ausschluesse]</p>
+    <p>[Deutschland und EU-Lieferländer konkret benennen, ggf. Ausschlüsse]</p>
 
     <h2>@(isEn ? "Shipping costs" : "Versandkosten")</h2>
     <p>[Versandkosten nach Land/PLZ/Bordsteinkante/Montage transparent ausweisen]</p>
@@ -17,12 +17,13 @@
     <p>[Lieferzeit je Produkt und Land, Hinweis bei Vorkasse]</p>
 
     <h2>@(isEn ? "Payment methods" : "Zahlungsarten")</h2>
-    <p>[z. B. Vorkasse, Kreditkarte, Klarna, PayPal; ggf. Bonitaetspruefungshinweis]</p>
+    <p>[z. B. Vorkasse, Kreditkarte, Klarna, PayPal; ggf. BonitaetsPrüfungshinweis]</p>
 
     <h2>@(isEn ? "Price information" : "Preisangaben")</h2>
     <p>
         @(isEn
             ? "All prices include statutory VAT. Additional shipping costs are shown separately."
-            : "Alle Preise verstehen sich inklusive gesetzlicher Umsatzsteuer. Zusaetzliche Versandkosten werden gesondert ausgewiesen.")
+            : "Alle Preise verstehen sich inklusive gesetzlicher Umsatzsteuer. zusätzliche Versandkosten werden gesondert ausgewiesen.")
     </p>
 </section>
+

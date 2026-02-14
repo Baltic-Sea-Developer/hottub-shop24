@@ -1,7 +1,7 @@
 @{
     var lang = (ViewData["Lang"] as string) ?? "de";
     var isEn = lang == "en";
-    ViewData["Title"] = isEn ? "Privacy" : "Datenschutzerklaerung";
+    ViewData["Title"] = isEn ? "Privacy" : "Datenschutzerklärung";
 }
 
 <section class="product-card p-4 legal-content">
@@ -9,7 +9,7 @@
     <p>
         @(isEn
             ? "Template for orientation only. Legal review is required before production use."
-            : "Vorlage nur zur Orientierung. Vor Produktion ist eine rechtliche Pruefung erforderlich.")
+            : "Vorlage nur zur Orientierung. Vor Produktion ist eine rechtliche Prüfung erforderlich.")
     </p>
 
     <h2>@(isEn ? "Controller" : "Verantwortlicher")</h2>
@@ -26,7 +26,7 @@
     <p>
         @(isEn
             ? "We process master, contact and order data for contract fulfillment (Art. 6(1)(b) GDPR)."
-            : "Wir verarbeiten Stamm-, Kontakt- und Bestelldaten zur Vertragserfuellung (Art. 6 Abs. 1 lit. b DSGVO).")
+            : "Wir verarbeiten Stamm-, Kontakt- und Bestelldaten zur Vertragserfüllung (Art. 6 Abs. 1 lit. b DSGVO).")
     </p>
 
     <h2>@(isEn ? "Payment providers" : "Zahlungsdienstleister")</h2>
@@ -40,12 +40,13 @@
     </p>
 
     <h2>@(isEn ? "Storage periods" : "Speicherdauer")</h2>
-    <p>[Konkrete Fristen ergaenzen, z. B. handels- und steuerrechtliche Aufbewahrungspflichten]</p>
+    <p>[Konkrete Fristen ergänzen, z. B. handels- und steuerrechtliche Aufbewahrungspflichten]</p>
 
     <h2>@(isEn ? "Data subject rights" : "Betroffenenrechte")</h2>
     <p>
         @(isEn
             ? "You have rights to access, rectification, erasure, restriction, portability and objection, plus complaint rights to a supervisory authority."
-            : "Sie haben Rechte auf Auskunft, Berichtigung, Loeschung, Einschraenkung, Datenuebertragbarkeit und Widerspruch sowie ein Beschwerderecht bei einer Aufsichtsbehoerde.")
+            : "Sie haben Rechte auf Auskunft, Berichtigung, Löschung, Einschränkung, Datenübertragbarkeit und Widerspruch sowie ein Beschwerderecht bei einer Aufsichtsbehörde.")
     </p>
 </section>
+
