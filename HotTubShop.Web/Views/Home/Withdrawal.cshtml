@@ -1,40 +1,175 @@
-@{
+﻿@{
     var lang = (ViewData["Lang"] as string) ?? "de";
     var isEn = lang == "en";
-    ViewData["Title"] = isEn ? "Right of withdrawal" : "Widerrufsbelehrung";
+    ViewData["Title"] = isEn ? "Right of Withdrawal" : "Widerrufsbelehrung";
 }
 
 <section class="product-card p-4 legal-content">
     <h1>@ViewData["Title"]</h1>
-    <p>
-        @(isEn
-            ? "Template for consumer contracts (distance selling). Review legally before use."
-            : "Vorlage f�r Verbraucher-Fernabsatzvertr�ge. Vor Verwendung rechtlich pr�fen lassen.")
-    </p>
 
-    <h2>@(isEn ? "Cancellation policy" : "Widerrufsrecht")</h2>
-    <p>
-        @(isEn
-            ? "Consumers have the right to withdraw from this contract within 14 days without giving any reason."
-            : "Verbraucher haben das Recht, binnen 14 Tagen ohne Angabe von Gr�nden diesen Vertrag zu widerrufen.")
-    </p>
+    @if (!isEn)
+    {
+        <p>
+            Verbraucher haben bei Fernabsatzverträgen grundsätzlich ein gesetzliches Widerrufsrecht.
+            Die nachfolgenden Informationen orientieren sich am gesetzlichen Muster (Anlage 1 zu Art. 246a § 1 Abs. 2 Satz 2 EGBGB).
+        </p>
 
-    <h2>@(isEn ? "Withdrawal period" : "Widerrufsfrist")</h2>
-    <p>[Bitte konkrete Fristberechnung und Fristbeginn passend zum Produkttyp erg�nzen]</p>
+        <h2>Widerrufsrecht</h2>
+        <p>Sie haben das Recht, binnen vierzehn Tagen ohne Angabe von Gründen diesen Vertrag zu widerrufen.</p>
 
-    <h2>@(isEn ? "Exercise of the right" : "Aus�bung des Widerrufs")</h2>
-    <p>
-        [Name/Firma, Anschrift, E-Mail, optional Fax]<br />
-        @(isEn ? "You can use the attached model withdrawal form." : "Sie k�nnen daf�r das beigef�gte Muster-Widerrufsformular verwenden.")
-    </p>
+        <h2>Widerrufsfrist</h2>
+        <p>Die Widerrufsfrist beträgt vierzehn Tage ab dem Tag,</p>
+        <ul>
+            <li>an dem Sie oder ein von Ihnen benannter Dritter, der nicht der Beförderer ist, die Ware in Besitz genommen haben bzw. hat, wenn Sie eine Ware bestellt haben,</li>
+            <li>an dem Sie oder ein von Ihnen benannter Dritter, der nicht der Beförderer ist, die letzte Ware in Besitz genommen haben bzw. hat, wenn Sie mehrere Waren im Rahmen einer einheitlichen Bestellung bestellt haben und diese getrennt geliefert werden,</li>
+            <li>an dem Sie oder ein von Ihnen benannter Dritter, der nicht der Beförderer ist, die letzte Teilsendung oder das letzte Stück in Besitz genommen haben bzw. hat, wenn Sie eine Ware bestellt haben, die in mehreren Teilsendungen oder Stücken geliefert wird.</li>
+        </ul>
 
-    <h2>@(isEn ? "Consequences of withdrawal" : "Folgen des Widerrufs")</h2>
-    <p>[R�ckzahlung, Fristen, R�cksendekosten, Wertersatz-Regelungen erg�nzen]</p>
+        <h2>Ausübung des Widerrufsrechts</h2>
+        <p>
+            Um Ihr Widerrufsrecht auszuüben, müssen Sie uns (HotTub-Shop24, Sascha Humkamp, Am Kornhof 11,
+            23744 Schönwalde am Bungsberg, Deutschland, E-Mail: info@hottub-shop24.de, Telefon: +49 1520 9884111)
+            mittels einer eindeutigen Erklärung (z. B. ein mit der Post versandter Brief oder eine E-Mail)
+            über Ihren Entschluss, diesen Vertrag zu widerrufen, informieren.
+            Sie können dafür das unten stehende Muster-Widerrufsformular verwenden, das jedoch nicht vorgeschrieben ist.
+        </p>
+        <p>
+            Zur Wahrung der Widerrufsfrist reicht es aus, dass Sie die Mitteilung über die Ausübung des Widerrufsrechts
+            vor Ablauf der Widerrufsfrist absenden.
+        </p>
 
-    <h2>@(isEn ? "Model withdrawal form" : "Muster-Widerrufsformular")</h2>
-    <p>
-        @(isEn ? "To: [Company, address, email]" : "An: [Firma, Anschrift, E-Mail]")<br />
-        @(isEn ? "I/We hereby give notice that I/We withdraw from my/our contract for the sale of the following goods..." : "Hiermit widerrufe(n) ich/wir den von mir/uns abgeschlossenen Vertrag �ber den Kauf der folgenden Waren...")
-    </p>
+        <h2>Folgen des Widerrufs</h2>
+        <p>
+            Wenn Sie diesen Vertrag widerrufen, haben wir Ihnen alle Zahlungen, die wir von Ihnen erhalten haben,
+            einschließlich der Lieferkosten (mit Ausnahme der zusätzlichen Kosten, die sich daraus ergeben,
+            dass Sie eine andere Art der Lieferung als die von uns angebotene, günstigste Standardlieferung gewählt haben),
+            unverzüglich und spätestens binnen vierzehn Tagen ab dem Tag zurückzuzahlen,
+            an dem die Mitteilung über Ihren Widerruf dieses Vertrags bei uns eingegangen ist.
+        </p>
+        <p>
+            Für diese Rückzahlung verwenden wir dasselbe Zahlungsmittel, das Sie bei der ursprünglichen Transaktion eingesetzt haben,
+            es sei denn, mit Ihnen wurde ausdrücklich etwas anderes vereinbart; in keinem Fall werden Ihnen wegen dieser Rückzahlung Entgelte berechnet.
+            Wir können die Rückzahlung verweigern, bis wir die Waren wieder zurückerhalten haben oder bis Sie den Nachweis erbracht haben,
+            dass Sie die Waren zurückgesandt haben, je nachdem, welches der frühere Zeitpunkt ist.
+        </p>
+
+        <h2>Rücksendung der Waren</h2>
+        <p>
+            Sie haben die Waren unverzüglich und in jedem Fall spätestens binnen vierzehn Tagen ab dem Tag,
+            an dem Sie uns über den Widerruf dieses Vertrags unterrichten, an uns zurückzusenden oder zu übergeben.
+            Die Frist ist gewahrt, wenn Sie die Waren vor Ablauf der Frist von vierzehn Tagen absenden.
+        </p>
+        <p>
+            Sie tragen die unmittelbaren Kosten der Rücksendung paketversandfähiger Waren.
+            Für nicht paketversandfähige Waren (z. B. Whirlpools) organisieren wir die Rückholung; die unmittelbaren Rücksendekosten innerhalb Deutschlands tragen wir.
+        </p>
+        <p>
+            Sie müssen für einen etwaigen Wertverlust der Waren nur aufkommen, wenn dieser Wertverlust
+            auf einen zur Prüfung der Beschaffenheit, Eigenschaften und Funktionsweise der Waren nicht notwendigen Umgang mit ihnen zurückzuführen ist.
+        </p>
+
+        <h2>Ausschluss bzw. vorzeitiges Erlöschen des Widerrufsrechts</h2>
+        <p>Das Widerrufsrecht besteht insbesondere nicht bei Verträgen</p>
+        <ul>
+            <li>zur Lieferung von Waren, die nicht vorgefertigt sind und für deren Herstellung eine individuelle Auswahl oder Bestimmung durch den Verbraucher maßgeblich ist oder die eindeutig auf die persönlichen Bedürfnisse des Verbrauchers zugeschnitten sind,</li>
+            <li>zur Lieferung versiegelter Waren, die aus Gründen des Gesundheitsschutzes oder der Hygiene nicht zur Rückgabe geeignet sind, wenn ihre Versiegelung nach der Lieferung entfernt wurde.</li>
+        </ul>
+
+        <h2>Muster-Widerrufsformular</h2>
+        <p>(Wenn Sie den Vertrag widerrufen wollen, dann füllen Sie bitte dieses Formular aus und senden Sie es zurück.)</p>
+        <p>
+            An HotTub-Shop24, Sascha Humkamp, Am Kornhof 11, 23744 Schönwalde am Bungsberg, Deutschland,<br />
+            E-Mail: info@hottub-shop24.de<br /><br />
+            Hiermit widerrufe(n) ich/wir (*) den von mir/uns (*) abgeschlossenen Vertrag über den Kauf der folgenden Waren (*)<br /><br />
+            Bestellt am (*) / erhalten am (*)<br /><br />
+            Name des/der Verbraucher(s)<br /><br />
+            Anschrift des/der Verbraucher(s)<br /><br />
+            Unterschrift des/der Verbraucher(s) (nur bei Mitteilung auf Papier)<br /><br />
+            Datum<br /><br />
+            (*) Unzutreffendes streichen.
+        </p>
+
+        <p><strong>Stand:</strong> 15. Februar 2026</p>
+    }
+    else
+    {
+        <p>
+            Consumers generally have a statutory right of withdrawal for distance contracts.
+            The text below follows the legal German model information structure.
+        </p>
+
+        <h2>Right of withdrawal</h2>
+        <p>You have the right to withdraw from this contract within fourteen days without giving any reason.</p>
+
+        <h2>Withdrawal period</h2>
+        <p>The withdrawal period is fourteen days from the day</p>
+        <ul>
+            <li>on which you, or a third party named by you who is not the carrier, took possession of the goods, if you ordered one item,</li>
+            <li>on which you, or a third party named by you who is not the carrier, took possession of the last goods, if you ordered multiple goods in one order and they are delivered separately,</li>
+            <li>on which you, or a third party named by you who is not the carrier, took possession of the last partial shipment or piece, if goods are delivered in several partial shipments or pieces.</li>
+        </ul>
+
+        <h2>How to exercise your right</h2>
+        <p>
+            To exercise your right of withdrawal, you must inform us (HotTub-Shop24, Sascha Humkamp, Am Kornhof 11,
+            23744 Schönwalde am Bungsberg, Germany, email: info@hottub-shop24.de, phone: +49 1520 9884111)
+            by means of a clear statement (e.g. letter by post or email) of your decision to withdraw from this contract.
+            You may use the model withdrawal form below, but it is not mandatory.
+        </p>
+        <p>
+            To meet the withdrawal deadline, it is sufficient for you to send your communication
+            concerning your exercise of the right of withdrawal before the withdrawal period has expired.
+        </p>
+
+        <h2>Effects of withdrawal</h2>
+        <p>
+            If you withdraw from this contract, we will reimburse all payments received from you, including delivery costs
+            (except additional costs resulting from your choice of a delivery type other than the least expensive standard delivery offered by us),
+            without undue delay and no later than fourteen days from the day on which we are informed about your decision to withdraw.
+        </p>
+        <p>
+            We will carry out such reimbursement using the same means of payment as you used for the initial transaction,
+            unless you have expressly agreed otherwise; in any event, you will not incur any fees as a result of the reimbursement.
+            We may withhold reimbursement until we have received the goods back or you have supplied evidence of having sent back the goods,
+            whichever is the earliest.
+        </p>
+
+        <h2>Return of goods</h2>
+        <p>
+            You shall send back or hand over the goods to us without undue delay and in any event no later than fourteen days
+            from the day on which you communicate your withdrawal from this contract to us.
+            The deadline is met if you send back the goods before the period of fourteen days has expired.
+        </p>
+        <p>
+            You bear the direct cost of returning parcel-shippable goods.
+            For non-parcel-shippable goods (e.g. hot tubs), we organize pick-up and bear the direct return costs within Germany.
+        </p>
+        <p>
+            You are only liable for any diminished value of the goods resulting from handling other than what is necessary
+            to establish the nature, characteristics and functioning of the goods.
+        </p>
+
+        <h2>Exclusions or early expiry of the right of withdrawal</h2>
+        <p>The right of withdrawal does not apply in particular to contracts</p>
+        <ul>
+            <li>for the supply of goods made to the consumer's specifications or clearly personalized,</li>
+            <li>for the supply of sealed goods which are not suitable for return due to health protection or hygiene reasons, if unsealed after delivery.</li>
+        </ul>
+
+        <h2>Model withdrawal form</h2>
+        <p>(If you wish to withdraw from the contract, please complete and return this form.)</p>
+        <p>
+            To HotTub-Shop24, Sascha Humkamp, Am Kornhof 11, 23744 Schönwalde am Bungsberg, Germany,<br />
+            email: info@hottub-shop24.de<br /><br />
+            I/We (*) hereby give notice that I/We (*) withdraw from my/our (*) contract of sale of the following goods (*)<br /><br />
+            Ordered on (*) / received on (*)<br /><br />
+            Name of consumer(s)<br /><br />
+            Address of consumer(s)<br /><br />
+            Signature of consumer(s) (only if this form is notified on paper)<br /><br />
+            Date<br /><br />
+            (*) Delete as appropriate.
+        </p>
+
+        <p><strong>Last updated:</strong> February 15, 2026</p>
+    }
 </section>
-
