@@ -43,6 +43,26 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.Use(async (context, next) =>
+{
+    if (context.Request.Path.Equals("/Identity/Account/Register", StringComparison.OrdinalIgnoreCase) ||
+        context.Request.Path.Equals("/Identity/Account/Login", StringComparison.OrdinalIgnoreCase))
+    {
+        if (context.Request.Query.TryGetValue("returnUrl", out var returnUrlValues))
+        {
+            var returnUrl = returnUrlValues.ToString();
+            if (IsPrivilegedReturnUrl(returnUrl))
+            {
+                var target = context.Request.Path + "?returnUrl=%2F";
+                context.Response.Redirect(target);
+                return;
+            }
+        }
+    }
+
+    await next();
+});
+
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -92,4 +112,15 @@ static string ResolveAppDataPath(string contentRootPath)
         Directory.CreateDirectory(fallback);
         return fallback;
     }
+}
+
+static bool IsPrivilegedReturnUrl(string? returnUrl)
+{
+    if (string.IsNullOrWhiteSpace(returnUrl))
+    {
+        return false;
+    }
+
+    var normalized = Uri.UnescapeDataString(returnUrl.Trim());
+    return normalized.StartsWith("/Admin", StringComparison.OrdinalIgnoreCase);
 }
