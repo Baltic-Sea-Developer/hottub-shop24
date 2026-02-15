@@ -156,6 +156,12 @@ public class HomeController : Controller
     public IActionResult Checkout(string? lang)
     {
         var language = LanguageExtensions.NormalizeLanguage(lang);
+        if (!(User.Identity?.IsAuthenticated ?? false))
+        {
+            var returnUrl = Url.Action(nameof(Checkout), nameof(HomeController).Replace("Controller", string.Empty), new { lang = language }) ?? "/";
+            return RedirectToPage("/Account/Login", new { area = "Identity", returnUrl });
+        }
+
         var cart = GetCart();
         if (cart.Count == 0)
         {
@@ -174,6 +180,12 @@ public class HomeController : Controller
     public async Task<IActionResult> Checkout(CheckoutViewModel model)
     {
         model.Language = LanguageExtensions.NormalizeLanguage(model.Language);
+        if (!(User.Identity?.IsAuthenticated ?? false))
+        {
+            var returnUrl = Url.Action(nameof(Checkout), nameof(HomeController).Replace("Controller", string.Empty), new { lang = model.Language }) ?? "/";
+            return RedirectToPage("/Account/Login", new { area = "Identity", returnUrl });
+        }
+
         model.Items = GetCart();
         if (model.Items.Count == 0)
         {

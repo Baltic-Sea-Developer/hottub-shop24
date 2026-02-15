@@ -83,7 +83,11 @@ else
         @if (isSignedIn)
         {
             <strong>@(Model.Language == "en" ? "Total" : "Gesamt"): @Model.Total.ToString("N0") EUR</strong>
+            <a class="btn btn-primary" asp-action="Checkout" asp-route-lang="@Model.Language">@(Model.Language == "en" ? "Checkout" : "Zur Kasse")</a>
         }
-        <a class="btn btn-primary" asp-action="Checkout" asp-route-lang="@Model.Language">@(Model.Language == "en" ? "Checkout" : "Zur Kasse")</a>
+        else
+        {
+            <button type="button" class="btn btn-primary" disabled>@(Model.Language == "en" ? "Checkout (Login required)" : "Zur Kasse (Login erforderlich)")</button>
+        }
     </section>
 }
