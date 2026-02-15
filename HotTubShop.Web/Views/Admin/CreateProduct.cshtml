@@ -4,4 +4,8 @@
 }
 
 <h1 class="h3 mb-3">Produkt anlegen</h1>
+@if (TempData["AdminError"] is string adminError && !string.IsNullOrWhiteSpace(adminError))
+{
+    <div class="alert alert-danger">@adminError</div>
+}
 <partial name="_ProductForm" model="Model" />

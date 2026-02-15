@@ -11,10 +11,12 @@ namespace HotTubShop.Web.Controllers;
 public class AdminController : Controller
 {
     private readonly IProductCatalogService _catalogService;
+    private readonly ILogger<AdminController> _logger;
 
-    public AdminController(IProductCatalogService catalogService)
+    public AdminController(IProductCatalogService catalogService, ILogger<AdminController> logger)
     {
         _catalogService = catalogService;
+        _logger = logger;
     }
 
     public async Task<IActionResult> Index()
@@ -30,6 +32,11 @@ public class AdminController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> CreateProduct(AdminProductEditViewModel model)
     {
+        ModelState.Remove(nameof(model.NameEn));
+        ModelState.Remove(nameof(model.DescriptionDe));
+        ModelState.Remove(nameof(model.DescriptionEn));
+        ModelState.Remove(nameof(model.ImageUrl));
+
         if (!TryParseMoney(model.BasePrice, out var basePrice))
         {
             ModelState.AddModelError(nameof(model.BasePrice), "Bitte einen gültigen Preis eingeben (z. B. 19999,00).");
@@ -37,19 +44,30 @@ public class AdminController : Controller
 
         if (!ModelState.IsValid)
         {
+            TempData["AdminError"] = JoinModelStateErrors();
             return View(model);
         }
 
-        await _catalogService.AddProductAsync(new HotTubProduct
+        try
         {
-            Sku = model.Sku,
-            NameDe = model.NameDe,
-            NameEn = string.IsNullOrWhiteSpace(model.NameEn) ? model.NameDe : model.NameEn,
-            DescriptionDe = model.DescriptionDe,
-            DescriptionEn = string.IsNullOrWhiteSpace(model.DescriptionEn) ? model.DescriptionDe : model.DescriptionEn,
-            ImageUrl = model.ImageUrl,
-            BasePrice = basePrice
-        });
+            await _catalogService.AddProductAsync(new HotTubProduct
+            {
+                Sku = model.Sku,
+                NameDe = model.NameDe,
+                NameEn = string.IsNullOrWhiteSpace(model.NameEn) ? model.NameDe : model.NameEn,
+                DescriptionDe = model.DescriptionDe ?? string.Empty,
+                DescriptionEn = string.IsNullOrWhiteSpace(model.DescriptionEn) ? (model.DescriptionDe ?? string.Empty) : model.DescriptionEn,
+                ImageUrl = model.ImageUrl ?? string.Empty,
+                BasePrice = basePrice
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to add product {Sku}", model.Sku);
+            ModelState.AddModelError(string.Empty, $"Speichern fehlgeschlagen: {ex.Message}");
+            TempData["AdminError"] = ex.Message;
+            return View(model);
+        }
 
         return RedirectToAction(nameof(Index));
     }
@@ -80,6 +98,11 @@ public class AdminController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> EditProduct(AdminProductEditViewModel model)
     {
+        ModelState.Remove(nameof(model.NameEn));
+        ModelState.Remove(nameof(model.DescriptionDe));
+        ModelState.Remove(nameof(model.DescriptionEn));
+        ModelState.Remove(nameof(model.ImageUrl));
+
         if (!TryParseMoney(model.BasePrice, out var basePrice))
         {
             ModelState.AddModelError(nameof(model.BasePrice), "Bitte einen gültigen Preis eingeben (z. B. 19999,00).");
@@ -87,6 +110,7 @@ public class AdminController : Controller
 
         if (!ModelState.IsValid)
         {
+            TempData["AdminError"] = JoinModelStateErrors();
             return View(model);
         }
 
@@ -104,7 +128,18 @@ public class AdminController : Controller
         existing.ImageUrl = model.ImageUrl;
         existing.BasePrice = basePrice;
 
-        await _catalogService.UpdateProductAsync(existing);
+        try
+        {
+            await _catalogService.UpdateProductAsync(existing);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to update product {Id}", model.Id);
+            ModelState.AddModelError(string.Empty, $"Speichern fehlgeschlagen: {ex.Message}");
+            TempData["AdminError"] = ex.Message;
+            return View(model);
+        }
+
         return RedirectToAction(nameof(Index));
     }
 
@@ -138,6 +173,8 @@ public class AdminController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> AddOption(AdminOptionEditViewModel model)
     {
+        ModelState.Remove(nameof(model.NameEn));
+
         if (!TryParseMoney(model.PriceDelta, out var priceDelta))
         {
             ModelState.AddModelError(nameof(model.PriceDelta), "Bitte einen gültigen Aufpreis eingeben (z. B. 499,00).");
@@ -145,16 +182,27 @@ public class AdminController : Controller
 
         if (!ModelState.IsValid)
         {
+            TempData["AdminError"] = JoinModelStateErrors();
             return View(model);
         }
 
-        await _catalogService.AddOptionAsync(model.ProductId, new ShopOption
+        try
         {
-            GroupName = model.GroupName,
-            NameDe = model.NameDe,
-            NameEn = string.IsNullOrWhiteSpace(model.NameEn) ? model.NameDe : model.NameEn,
-            PriceDelta = priceDelta
-        });
+            await _catalogService.AddOptionAsync(model.ProductId, new ShopOption
+            {
+                GroupName = model.GroupName,
+                NameDe = model.NameDe,
+                NameEn = string.IsNullOrWhiteSpace(model.NameEn) ? model.NameDe : model.NameEn,
+                PriceDelta = priceDelta
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to add option for product {ProductId}", model.ProductId);
+            ModelState.AddModelError(string.Empty, $"Speichern fehlgeschlagen: {ex.Message}");
+            TempData["AdminError"] = ex.Message;
+            return View(model);
+        }
 
         return RedirectToAction(nameof(ProductOptions), new { id = model.ProductId });
     }
@@ -184,6 +232,8 @@ public class AdminController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> EditOption(AdminOptionEditViewModel model)
     {
+        ModelState.Remove(nameof(model.NameEn));
+
         if (!TryParseMoney(model.PriceDelta, out var priceDelta))
         {
             ModelState.AddModelError(nameof(model.PriceDelta), "Bitte einen gültigen Aufpreis eingeben (z. B. 499,00).");
@@ -191,17 +241,28 @@ public class AdminController : Controller
 
         if (!ModelState.IsValid)
         {
+            TempData["AdminError"] = JoinModelStateErrors();
             return View(model);
         }
 
-        await _catalogService.UpdateOptionAsync(model.ProductId, new ShopOption
+        try
         {
-            Id = model.Id,
-            GroupName = model.GroupName,
-            NameDe = model.NameDe,
-            NameEn = string.IsNullOrWhiteSpace(model.NameEn) ? model.NameDe : model.NameEn,
-            PriceDelta = priceDelta
-        });
+            await _catalogService.UpdateOptionAsync(model.ProductId, new ShopOption
+            {
+                Id = model.Id,
+                GroupName = model.GroupName,
+                NameDe = model.NameDe,
+                NameEn = string.IsNullOrWhiteSpace(model.NameEn) ? model.NameDe : model.NameEn,
+                PriceDelta = priceDelta
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to update option {OptionId} for product {ProductId}", model.Id, model.ProductId);
+            ModelState.AddModelError(string.Empty, $"Speichern fehlgeschlagen: {ex.Message}");
+            TempData["AdminError"] = ex.Message;
+            return View(model);
+        }
 
         return RedirectToAction(nameof(ProductOptions), new { id = model.ProductId });
     }
@@ -227,5 +288,17 @@ public class AdminController : Controller
         return decimal.TryParse(normalized, NumberStyles.Number, CultureInfo.CurrentCulture, out result)
             || decimal.TryParse(normalized, NumberStyles.Number, CultureInfo.GetCultureInfo("de-DE"), out result)
             || decimal.TryParse(normalized, NumberStyles.Number, CultureInfo.InvariantCulture, out result);
+    }
+
+    private string JoinModelStateErrors()
+    {
+        var errors = ModelState
+            .SelectMany(kvp => kvp.Value?.Errors.Select(e => $"{kvp.Key}: {e.ErrorMessage}") ?? [])
+            .Where(e => !string.IsNullOrWhiteSpace(e))
+            .ToList();
+
+        var message = errors.Count == 0 ? "Unbekannter Validierungsfehler." : string.Join(" | ", errors);
+        _logger.LogWarning("Admin form validation failed: {Message}", message);
+        return message;
     }
 }
