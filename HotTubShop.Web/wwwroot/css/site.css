@@ -127,6 +127,22 @@ h1, h2, h3, .navbar-brand {
   text-decoration: underline;
 }
 
+.manage-nav .nav-link {
+  color: #111 !important;
+}
+
+.manage-nav .nav-link:hover,
+.manage-nav .nav-link:focus {
+  color: #111 !important;
+  background-color: rgba(0, 0, 0, 0.06);
+}
+
+.manage-nav .nav-link.active {
+  color: #111 !important;
+  background-color: rgba(0, 0, 0, 0.12);
+  border-color: rgba(0, 0, 0, 0.2);
+}
+
 .btn:focus,
 .btn:active:focus,
 .btn-link.nav-link:focus,
