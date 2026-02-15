@@ -35,10 +35,6 @@ else
                             {
                                 <strong>ab @product.BasePrice.ToString("N0") EUR</strong>
                             }
-                            else
-                            {
-                                <strong class="text-muted">@(Model.Language == "en" ? "Price on login" : "Preis nach Login")</strong>
-                            }
                             <a class="btn btn-primary" asp-controller="Home" asp-action="Product" asp-route-id="@product.Id" asp-route-lang="@Model.Language">@(Model.Language == "en" ? "Configure" : "Konfigurieren")</a>
                         </div>
                     </div>
