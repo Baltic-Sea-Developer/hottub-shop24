@@ -9,6 +9,7 @@ public class HotTubProduct
     public string DescriptionDe { get; set; } = string.Empty;
     public string DescriptionEn { get; set; } = string.Empty;
     public string ImageUrl { get; set; } = string.Empty;
+    public List<string> GalleryImageUrls { get; set; } = [];
     public decimal BasePrice { get; set; }
     public List<ShopOption> Options { get; set; } = [];
 }

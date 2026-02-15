@@ -25,6 +25,15 @@
             <input asp-for="ImageFile" class="form-control" type="file" accept=".jpg,.jpeg,.png,.webp,.gif,.svg" />
             <div class="form-text">Beim Upload wird die Bild-URL automatisch gesetzt.</div>
         </div>
+        <div class="col-md-12">
+            <label asp-for="GalleryImageUrlsText" class="form-label"></label>
+            <textarea asp-for="GalleryImageUrlsText" class="form-control" rows="3" placeholder="/img/products/detail1.jpg&#10;/img/products/detail2.jpg"></textarea>
+        </div>
+        <div class="col-md-12">
+            <label asp-for="GalleryImageFiles" class="form-label"></label>
+            <input asp-for="GalleryImageFiles" class="form-control" type="file" accept=".jpg,.jpeg,.png,.webp,.gif,.svg" multiple />
+            <div class="form-text">Mehrfachauswahl möglich. Hochgeladene Bilder werden automatisch ergänzt.</div>
+        </div>
         <div class="col-md-6">
             <label asp-for="NameDe" class="form-label"></label>
             <input asp-for="NameDe" class="form-control" />

@@ -29,6 +29,12 @@ public class AdminProductEditViewModel
     [Display(Name = "Bild Upload")]
     public IFormFile? ImageFile { get; set; }
 
+    [Display(Name = "Weitere Bild-URLs (eine pro Zeile)")]
+    public string? GalleryImageUrlsText { get; set; }
+
+    [Display(Name = "Weitere Bilder Upload")]
+    public List<IFormFile>? GalleryImageFiles { get; set; }
+
     [Required]
     [Display(Name = "Basispreis")]
     public string BasePrice { get; set; } = string.Empty;

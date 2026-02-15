@@ -34,11 +34,9 @@ public class CheckoutViewModel
     [Display(Name = "Ort")]
     public string City { get; set; } = string.Empty;
 
-    [Range(typeof(bool), "true", "true", ErrorMessage = "Bitte AGB lesen und akzeptieren.")]
     [Display(Name = "AGB gelesen und akzeptiert")]
     public bool AcceptTerms { get; set; }
 
-    [Range(typeof(bool), "true", "true", ErrorMessage = "Bitte Widerrufsbelehrung lesen und akzeptieren.")]
     [Display(Name = "Widerrufsbelehrung gelesen und akzeptiert")]
     public bool AcceptWithdrawal { get; set; }
 

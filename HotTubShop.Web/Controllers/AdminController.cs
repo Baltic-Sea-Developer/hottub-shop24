@@ -69,6 +69,12 @@ public class AdminController : Controller
 
         try
         {
+            var galleryImageUrls = await ResolveGalleryImageUrlsAsync([], model.GalleryImageUrlsText, model.GalleryImageFiles, "products");
+            if (!ModelState.IsValid)
+            {
+                TempData["AdminError"] = JoinModelStateErrors();
+                return View(model);
+            }
             await _catalogService.AddProductAsync(new HotTubProduct
             {
                 Id = Guid.NewGuid().ToString("N"),
@@ -78,6 +84,7 @@ public class AdminController : Controller
                 DescriptionDe = model.DescriptionDe ?? string.Empty,
                 DescriptionEn = string.IsNullOrWhiteSpace(model.DescriptionEn) ? (model.DescriptionDe ?? string.Empty) : model.DescriptionEn,
                 ImageUrl = imageUrl,
+                GalleryImageUrls = galleryImageUrls,
                 BasePrice = basePrice
             });
         }
@@ -110,6 +117,7 @@ public class AdminController : Controller
             DescriptionDe = product.DescriptionDe,
             DescriptionEn = product.DescriptionEn,
             ImageUrl = product.ImageUrl,
+            GalleryImageUrlsText = string.Join(Environment.NewLine, product.GalleryImageUrls ?? []),
             BasePrice = product.BasePrice.ToString("0.##", CultureInfo.CurrentCulture)
         });
     }
@@ -163,6 +171,16 @@ public class AdminController : Controller
         }
 
         existing.ImageUrl = imageUrl;
+        existing.GalleryImageUrls = await ResolveGalleryImageUrlsAsync(
+            existing.GalleryImageUrls ?? [],
+            model.GalleryImageUrlsText,
+            model.GalleryImageFiles,
+            "products");
+        if (!ModelState.IsValid)
+        {
+            TempData["AdminError"] = JoinModelStateErrors();
+            return View(model);
+        }
         existing.BasePrice = basePrice;
 
         try
@@ -477,5 +495,53 @@ public class AdminController : Controller
         await imageFile.CopyToAsync(stream);
 
         return $"/img/{folder}/{fileName}";
+    }
+
+    private async Task<List<string>> ResolveGalleryImageUrlsAsync(
+        IEnumerable<string> currentUrls,
+        string? manualUrlsText,
+        IEnumerable<IFormFile>? imageFiles,
+        string folder)
+    {
+        var result = new List<string>();
+        var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var url in currentUrls.Where(u => !string.IsNullOrWhiteSpace(u)))
+        {
+            var trimmed = url.Trim();
+            if (seen.Add(trimmed))
+            {
+                result.Add(trimmed);
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(manualUrlsText))
+        {
+            var manualLines = manualUrlsText
+                .Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            foreach (var line in manualLines)
+            {
+                if (seen.Add(line))
+                {
+                    result.Add(line);
+                }
+            }
+        }
+
+        if (imageFiles is null)
+        {
+            return result;
+        }
+
+        foreach (var imageFile in imageFiles.Where(f => f is not null && f.Length > 0))
+        {
+            var uploadedUrl = await ResolveImageUrlAsync(null, null, imageFile, folder);
+            if (!string.IsNullOrWhiteSpace(uploadedUrl) && seen.Add(uploadedUrl))
+            {
+                result.Add(uploadedUrl);
+            }
+        }
+
+        return result;
     }
 }

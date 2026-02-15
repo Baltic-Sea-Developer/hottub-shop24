@@ -21,6 +21,8 @@ builder.Services.AddSession(options =>
     options.IdleTimeout = TimeSpan.FromHours(4);
 });
 builder.Services.AddSingleton<IProductCatalogService, JsonProductCatalogService>();
+builder.Services.Configure<OrderMailOptions>(builder.Configuration.GetSection("Mail:Smtp"));
+builder.Services.AddScoped<IOrderMailService, SmtpOrderMailService>();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite($"Data Source={Path.Combine(appDataPath, "auth.db")}"));
 builder.Services.AddDefaultIdentity<IdentityUser>(options =>

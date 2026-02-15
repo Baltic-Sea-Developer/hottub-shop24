@@ -1,22 +1,55 @@
 ﻿@model ProductConfiguratorViewModel
 @{
     ViewData["Title"] = Model.Product.LocalizedName(Model.Language);
+    var isSignedIn = User?.Identity?.IsAuthenticated ?? false;
     var requiredGroups = Model.Product.Options
         .Where(o => o.IsRequiredGroup)
         .Select(o => o.GroupName)
         .Distinct(StringComparer.OrdinalIgnoreCase)
         .ToList();
+    var gallery = new List<string>();
+    if (!string.IsNullOrWhiteSpace(Model.Product.ImageUrl))
+    {
+        gallery.Add(Model.Product.ImageUrl);
+    }
+    foreach (var img in Model.Product.GalleryImageUrls.Where(i => !string.IsNullOrWhiteSpace(i)))
+    {
+        if (!gallery.Contains(img, StringComparer.OrdinalIgnoreCase))
+        {
+            gallery.Add(img);
+        }
+    }
 }
 
 <a class="btn btn-link px-0 mb-3" asp-controller="Home" asp-action="Index" asp-route-lang="@Model.Language">@(Model.Language == "en" ? "Back to catalog" : "Zurück zum Katalog")</a>
 
 <div class="row g-4">
     <div class="col-lg-5">
-        <img src="@Model.Product.ImageUrl" alt="@Model.Product.LocalizedName(Model.Language)" class="detail-image" />
+        <img id="main-product-image" src="@gallery.FirstOrDefault()" alt="@Model.Product.LocalizedName(Model.Language)" class="detail-image" />
+        @if (gallery.Count > 1)
+        {
+            <div class="d-flex flex-wrap gap-2 mt-2">
+                @foreach (var imageUrl in gallery)
+                {
+                    <button type="button" class="btn btn-sm btn-outline-secondary js-gallery-thumb" data-image="@imageUrl">
+                        <img src="@imageUrl" alt="@Model.Product.LocalizedName(Model.Language)" style="width:64px;height:64px;object-fit:cover;" />
+                    </button>
+                }
+            </div>
+        }
         <div class="product-card mt-3 p-3">
             <h1 class="h3 mt-1">@Model.Product.LocalizedName(Model.Language)</h1>
             <div>@Html.Raw(Model.Product.LocalizedDescription(Model.Language))</div>
-            <p class="mb-0"><strong>Basis: @Model.Product.BasePrice.ToString("N0") EUR</strong></p>
+            @if (isSignedIn)
+            {
+                <p class="mb-0"><strong>Basis: @Model.Product.BasePrice.ToString("N0") EUR</strong></p>
+            }
+            else
+            {
+                <p class="mb-0 text-muted">
+                    @(Model.Language == "en" ? "Prices are visible for registered customers only." : "Preise sind nur für registrierte Kunden sichtbar.")
+                </p>
+            }
         </div>
     </div>
 
@@ -59,7 +92,10 @@
                                     <img src="@option.ImageUrl" alt="@option.LocalizedName(Model.Language)" class="option-thumb me-2" />
                                 }
                                 <span>@option.LocalizedName(Model.Language)</span>
-                                <span class="float-end">+@option.PriceDelta.ToString("N0") EUR</span>
+                                @if (isSignedIn)
+                                {
+                                    <span class="float-end">+@option.PriceDelta.ToString("N0") EUR</span>
+                                }
                                 @if (!string.IsNullOrWhiteSpace(option.LocalizedDescription(Model.Language)))
                                 {
                                     <div class="small text-muted mt-1">@Html.Raw(option.LocalizedDescription(Model.Language))</div>
@@ -70,11 +106,14 @@
                 </div>
             }
 
-            <div class="alert alert-light mb-3" id="live-total"
-                 data-base-price="@Model.Product.BasePrice.ToString(System.Globalization.CultureInfo.InvariantCulture)"
-                 data-language="@Model.Language">
-                <strong>@(Model.Language == "en" ? "Total" : "Gesamtpreis"): <span id="live-total-value">@Model.Product.BasePrice.ToString("N0") EUR</span></strong>
-            </div>
+            @if (isSignedIn)
+            {
+                <div class="alert alert-light mb-3" id="live-total"
+                     data-base-price="@Model.Product.BasePrice.ToString(System.Globalization.CultureInfo.InvariantCulture)"
+                     data-language="@Model.Language">
+                    <strong>@(Model.Language == "en" ? "Total" : "Gesamtpreis"): <span id="live-total-value">@Model.Product.BasePrice.ToString("N0") EUR</span></strong>
+                </div>
+            }
             @if (requiredGroups.Count > 0)
             {
                 <div class="small text-muted mb-3" id="required-groups-hint">
@@ -91,6 +130,16 @@
 @section Scripts {
     <script>
         (() => {
+            const mainImage = document.getElementById("main-product-image");
+            const thumbs = Array.from(document.querySelectorAll(".js-gallery-thumb"));
+            thumbs.forEach((btn) => {
+                btn.addEventListener("click", () => {
+                    if (mainImage && btn.dataset.image) {
+                        mainImage.src = btn.dataset.image;
+                    }
+                });
+            });
+
             const totalContainer = document.getElementById("live-total");
             if (!totalContainer) return;
 

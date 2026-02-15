@@ -5,6 +5,27 @@
 
 <h1 class="h3 mb-3">@ViewData["Title"]</h1>
 
+@if (!(User?.Identity?.IsAuthenticated ?? false))
+{
+    var justAdded = (TempData["ShowRegisterPrompt"] as string) == "1";
+    <section class="alert alert-info">
+        <strong>@(justAdded
+            ? (Model.Language == "en" ? "Item added to cart." : "Artikel wurde in den Warenkorb gelegt.")
+            : (Model.Language == "en" ? "Optional account:" : "Optionales Kundenkonto:"))</strong>
+        @if (justAdded)
+        {
+            <br />
+        }
+        @(Model.Language == "en"
+            ? " create an account to unlock full pricing visibility and faster follow-up orders."
+            : " Lege ein Kundenkonto an, um volle Preisansicht und schnellere Folge-Bestellungen zu erhalten.")
+        <div class="mt-2 d-flex gap-2">
+            <a class="btn btn-sm btn-outline-primary" asp-area="Identity" asp-page="/Account/Register" asp-route-returnUrl="@Url.Action("Cart", "Home", new { lang = Model.Language })">@(Model.Language == "en" ? "Create account" : "Konto anlegen")</a>
+            <a class="btn btn-sm btn-outline-secondary" asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@Url.Action("Cart", "Home", new { lang = Model.Language })">@(Model.Language == "en" ? "Login" : "Anmelden")</a>
+        </div>
+    </section>
+}
+
 @if (Model.Items.Count == 0)
 {
     <section class="product-card p-4">

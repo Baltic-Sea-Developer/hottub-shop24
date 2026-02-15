@@ -23,6 +23,10 @@ else
             var item = Model.Items[i];
             <article class="mb-3 pb-3 border-bottom">
                 <h3 class="h6 mb-2">@item.ProductName</h3>
+                @if (!string.IsNullOrWhiteSpace(item.ProductDescription))
+                {
+                    <div class="small text-muted mb-1">@Html.Raw(item.ProductDescription)</div>
+                }
                 <div class="small text-muted">@(isEn ? "Base price" : "Basispreis"): @item.BasePrice.ToString("N2") EUR</div>
                 @if (item.SelectedOptions.Count > 0)
                 {
