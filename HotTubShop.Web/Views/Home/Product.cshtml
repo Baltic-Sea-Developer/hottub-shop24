@@ -44,12 +44,6 @@
             {
                 <p class="mb-0"><strong>Basis: @Model.Product.BasePrice.ToString("N0") EUR</strong></p>
             }
-            else
-            {
-                <p class="mb-0 text-muted">
-                    @(Model.Language == "en" ? "Prices are visible for registered customers only." : "Preise sind nur für registrierte Kunden sichtbar.")
-                </p>
-            }
         </div>
     </div>
 
