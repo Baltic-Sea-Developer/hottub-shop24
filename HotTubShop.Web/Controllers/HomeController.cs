@@ -224,9 +224,10 @@ public class HomeController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Order request mail could not be sent for {Email}", model.Email);
-            ModelState.AddModelError(string.Empty, model.Language == "en"
-                ? "Order request could not be sent by email. Please try again later."
-                : "Bestellanfrage konnte per E-Mail nicht versendet werden. Bitte später erneut versuchen.");
+            var prefix = model.Language == "en"
+                ? "Order request email could not be sent"
+                : "Bestellanfrage konnte per E-Mail nicht versendet werden";
+            ModelState.AddModelError(string.Empty, $"{prefix}: {ex.Message}");
             return View(model);
         }
 
