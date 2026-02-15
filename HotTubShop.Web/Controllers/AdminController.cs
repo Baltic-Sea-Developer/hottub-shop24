@@ -2,6 +2,8 @@ using HotTubShop.Web.Models;
 using HotTubShop.Web.Services;
 using HotTubShop.Web.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Globalization;
 
@@ -12,11 +14,16 @@ public class AdminController : Controller
 {
     private readonly IProductCatalogService _catalogService;
     private readonly ILogger<AdminController> _logger;
+    private readonly IWebHostEnvironment _environment;
 
-    public AdminController(IProductCatalogService catalogService, ILogger<AdminController> logger)
+    public AdminController(
+        IProductCatalogService catalogService,
+        ILogger<AdminController> logger,
+        IWebHostEnvironment environment)
     {
         _catalogService = catalogService;
         _logger = logger;
+        _environment = environment;
     }
 
     public async Task<IActionResult> Index()
@@ -49,6 +56,17 @@ public class AdminController : Controller
             return View(model);
         }
 
+        var imageUrl = await ResolveImageUrlAsync(
+            currentImageUrl: null,
+            manualImageUrl: model.ImageUrl,
+            imageFile: model.ImageFile,
+            folder: "products");
+        if (imageUrl is null)
+        {
+            TempData["AdminError"] = JoinModelStateErrors();
+            return View(model);
+        }
+
         try
         {
             await _catalogService.AddProductAsync(new HotTubProduct
@@ -59,7 +77,7 @@ public class AdminController : Controller
                 NameEn = string.IsNullOrWhiteSpace(model.NameEn) ? model.NameDe : model.NameEn,
                 DescriptionDe = model.DescriptionDe ?? string.Empty,
                 DescriptionEn = string.IsNullOrWhiteSpace(model.DescriptionEn) ? (model.DescriptionDe ?? string.Empty) : model.DescriptionEn,
-                ImageUrl = model.ImageUrl ?? string.Empty,
+                ImageUrl = imageUrl,
                 BasePrice = basePrice
             });
         }
@@ -127,7 +145,17 @@ public class AdminController : Controller
         existing.NameEn = string.IsNullOrWhiteSpace(model.NameEn) ? model.NameDe : model.NameEn;
         existing.DescriptionDe = model.DescriptionDe;
         existing.DescriptionEn = string.IsNullOrWhiteSpace(model.DescriptionEn) ? model.DescriptionDe : model.DescriptionEn;
-        existing.ImageUrl = model.ImageUrl;
+        var imageUrl = await ResolveImageUrlAsync(
+            currentImageUrl: existing.ImageUrl,
+            manualImageUrl: model.ImageUrl,
+            imageFile: model.ImageFile,
+            folder: "products");
+        if (imageUrl is null)
+        {
+            TempData["AdminError"] = JoinModelStateErrors();
+            return View(model);
+        }
+        existing.ImageUrl = imageUrl;
         existing.BasePrice = basePrice;
 
         try
@@ -198,6 +226,18 @@ public class AdminController : Controller
             return View(model);
         }
 
+        var imageUrl = await ResolveImageUrlAsync(
+            currentImageUrl: null,
+            manualImageUrl: model.ImageUrl,
+            imageFile: model.ImageFile,
+            folder: "options");
+        if (imageUrl is null)
+        {
+            await PopulateOptionGroups(model);
+            TempData["AdminError"] = JoinModelStateErrors();
+            return View(model);
+        }
+
         try
         {
             await _catalogService.AddOptionAsync(model.ProductId, new ShopOption
@@ -206,7 +246,7 @@ public class AdminController : Controller
                 GroupName = model.GroupName,
                 NameDe = model.NameDe,
                 NameEn = string.IsNullOrWhiteSpace(model.NameEn) ? model.NameDe : model.NameEn,
-                ImageUrl = model.ImageUrl ?? string.Empty,
+                ImageUrl = imageUrl,
                 PriceDelta = priceDelta
             });
         }
@@ -270,6 +310,20 @@ public class AdminController : Controller
             return View(model);
         }
 
+        var existingProduct = await _catalogService.GetByIdAsync(model.ProductId);
+        var existingOption = existingProduct?.Options.FirstOrDefault(o => o.Id == model.Id);
+        var imageUrl = await ResolveImageUrlAsync(
+            currentImageUrl: existingOption?.ImageUrl,
+            manualImageUrl: model.ImageUrl,
+            imageFile: model.ImageFile,
+            folder: "options");
+        if (imageUrl is null)
+        {
+            await PopulateOptionGroups(model);
+            TempData["AdminError"] = JoinModelStateErrors();
+            return View(model);
+        }
+
         try
         {
             await _catalogService.UpdateOptionAsync(model.ProductId, new ShopOption
@@ -278,7 +332,7 @@ public class AdminController : Controller
                 GroupName = model.GroupName,
                 NameDe = model.NameDe,
                 NameEn = string.IsNullOrWhiteSpace(model.NameEn) ? model.NameDe : model.NameEn,
-                ImageUrl = model.ImageUrl ?? string.Empty,
+                ImageUrl = imageUrl,
                 PriceDelta = priceDelta
             });
         }
@@ -344,5 +398,42 @@ public class AdminController : Controller
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .OrderBy(g => g)
             .ToList() ?? [];
+    }
+
+    private async Task<string?> ResolveImageUrlAsync(string? currentImageUrl, string? manualImageUrl, IFormFile? imageFile, string folder)
+    {
+        if (imageFile is null || imageFile.Length == 0)
+        {
+            return string.IsNullOrWhiteSpace(manualImageUrl)
+                ? (currentImageUrl ?? string.Empty)
+                : manualImageUrl.Trim();
+        }
+
+        var extension = Path.GetExtension(imageFile.FileName).ToLowerInvariant();
+        var allowed = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ".jpg", ".jpeg", ".png", ".webp", ".gif", ".svg"
+        };
+        if (!allowed.Contains(extension))
+        {
+            ModelState.AddModelError(string.Empty, "Ungültiges Bildformat. Erlaubt: jpg, jpeg, png, webp, gif, svg.");
+            return null;
+        }
+
+        var webRoot = _environment.WebRootPath;
+        if (string.IsNullOrWhiteSpace(webRoot))
+        {
+            webRoot = Path.Combine(_environment.ContentRootPath, "wwwroot");
+        }
+
+        var targetDir = Path.Combine(webRoot, "img", folder);
+        Directory.CreateDirectory(targetDir);
+
+        var fileName = $"{Guid.NewGuid():N}{extension}";
+        var targetPath = Path.Combine(targetDir, fileName);
+        await using var stream = System.IO.File.Create(targetPath);
+        await imageFile.CopyToAsync(stream);
+
+        return $"/img/{folder}/{fileName}";
     }
 }

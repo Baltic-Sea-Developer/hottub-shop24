@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 
 namespace HotTubShop.Web.ViewModels;
 
@@ -24,6 +25,9 @@ public class AdminProductEditViewModel
 
     [Display(Name = "Bild URL")]
     public string? ImageUrl { get; set; }
+
+    [Display(Name = "Bild Upload")]
+    public IFormFile? ImageFile { get; set; }
 
     [Required]
     [Display(Name = "Basispreis")]

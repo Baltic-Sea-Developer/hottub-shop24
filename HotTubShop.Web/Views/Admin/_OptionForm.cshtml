@@ -1,6 +1,6 @@
 @model AdminOptionEditViewModel
 
-<form method="post" asp-action="@(string.IsNullOrWhiteSpace(Model.Id) ? "AddOption" : "EditOption")" class="product-card p-3 p-lg-4">
+<form method="post" asp-action="@(string.IsNullOrWhiteSpace(Model.Id) ? "AddOption" : "EditOption")" enctype="multipart/form-data" class="product-card p-3 p-lg-4">
     @Html.AntiForgeryToken()
     <input type="hidden" asp-for="ProductId" />
     <input type="hidden" asp-for="Id" />
@@ -35,6 +35,11 @@
             <label asp-for="ImageUrl" class="form-label"></label>
             <input asp-for="ImageUrl" class="form-control" placeholder="/img/options/ofen-premium.jpg oder https://..." />
             <span asp-validation-for="ImageUrl" class="text-danger"></span>
+        </div>
+        <div class="col-md-12">
+            <label asp-for="ImageFile" class="form-label"></label>
+            <input asp-for="ImageFile" class="form-control" type="file" accept=".jpg,.jpeg,.png,.webp,.gif,.svg" />
+            <div class="form-text">Beim Upload wird die Bild-URL automatisch gesetzt.</div>
         </div>
         <div class="col-md-6">
             <label asp-for="NameDe" class="form-label"></label>
