@@ -1,0 +1,61 @@
+@model OrderHistoryViewModel
+@{
+    var isEn = Model.Language == "en";
+    ViewData["Title"] = isEn ? "My orders" : "Meine Bestellungen";
+}
+
+<h1 class="h3 mb-3">@ViewData["Title"]</h1>
+
+@if (Model.Orders.Count == 0)
+{
+    <section class="product-card p-4">
+        <p class="mb-0">@(isEn ? "No orders yet." : "Noch keine Bestellungen vorhanden.")</p>
+    </section>
+}
+else
+{
+    <div class="d-grid gap-3">
+        @foreach (var order in Model.Orders)
+        {
+            <section class="product-card p-3 p-lg-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <strong>@(isEn ? "Order" : "Bestellung") #@order.Id[..8]</strong>
+                    <span class="text-muted">@order.CreatedUtc.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</span>
+                </div>
+
+                @foreach (var item in order.Items)
+                {
+                    <article class="mb-3 pb-3 border-bottom">
+                        <h2 class="h6 mb-1">@item.ProductName</h2>
+                        @if (!string.IsNullOrWhiteSpace(item.ProductDescription))
+                        {
+                            <div class="small text-muted mb-1">@Html.Raw(item.ProductDescription)</div>
+                        }
+                        <div class="small text-muted">@(isEn ? "Base price" : "Basispreis"): @item.BasePrice.ToString("N2") EUR</div>
+                        @if (item.SelectedOptions.Count > 0)
+                        {
+                            <ul class="mb-2 mt-2">
+                                @foreach (var option in item.SelectedOptions)
+                                {
+                                    <li>
+                                        @option.LocalizedName(Model.Language) (+@option.PriceDelta.ToString("N2") EUR)
+                                        @if (!string.IsNullOrWhiteSpace(option.LocalizedDescription(Model.Language)))
+                                        {
+                                            <div class="small text-muted">@Html.Raw(option.LocalizedDescription(Model.Language))</div>
+                                        }
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    </article>
+                }
+
+                <div class="d-grid gap-1">
+                    <div class="d-flex justify-content-between"><span>@(isEn ? "Net total" : "Netto")</span><strong>@order.NetTotal.ToString("N2") EUR</strong></div>
+                    <div class="d-flex justify-content-between"><span>@(isEn ? "VAT (19%)" : "MwSt. (19%)")</span><strong>@order.VatAmount.ToString("N2") EUR</strong></div>
+                    <div class="d-flex justify-content-between"><span>@(isEn ? "Gross total" : "Brutto")</span><strong>@order.GrossTotal.ToString("N2") EUR</strong></div>
+                </div>
+            </section>
+        }
+    </div>
+}

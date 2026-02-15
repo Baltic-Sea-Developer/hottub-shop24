@@ -1,4 +1,7 @@
 using System.Diagnostics;
+using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
 using HotTubShop.Web.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using HotTubShop.Web.Models;
@@ -14,12 +17,18 @@ public class HomeController : Controller
     private readonly ILogger<HomeController> _logger;
     private readonly IProductCatalogService _catalogService;
     private readonly IOrderMailService _orderMailService;
+    private readonly AppDataPathProvider _appDataPathProvider;
 
-    public HomeController(ILogger<HomeController> logger, IProductCatalogService catalogService, IOrderMailService orderMailService)
+    public HomeController(
+        ILogger<HomeController> logger,
+        IProductCatalogService catalogService,
+        IOrderMailService orderMailService,
+        AppDataPathProvider appDataPathProvider)
     {
         _logger = logger;
         _catalogService = catalogService;
         _orderMailService = orderMailService;
+        _appDataPathProvider = appDataPathProvider;
     }
 
     public async Task<IActionResult> Index(string? lang)
@@ -220,6 +229,7 @@ public class HomeController : Controller
         try
         {
             await _orderMailService.SendOrderRequestAsync(model, HttpContext.RequestAborted);
+            SaveOrder(model);
         }
         catch (Exception ex)
         {
@@ -271,6 +281,25 @@ public class HomeController : Controller
         return View();
     }
 
+    [HttpGet]
+    public IActionResult Orders(string? lang)
+    {
+        var language = LanguageExtensions.NormalizeLanguage(lang);
+        if (!(User.Identity?.IsAuthenticated ?? false))
+        {
+            var returnUrl = Url.Action(nameof(Orders), "Home", new { lang = language }) ?? "/";
+            return RedirectToPage("/Account/Login", new { area = "Identity", returnUrl });
+        }
+
+        return View(new OrderHistoryViewModel
+        {
+            Language = language,
+            Orders = ReadOrders()
+                .OrderByDescending(x => x.CreatedUtc)
+                .ToList()
+        });
+    }
+
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {
@@ -279,6 +308,38 @@ public class HomeController : Controller
 
     private List<CartItem> GetCart()
     {
+        var userCartPath = GetUserCartPath();
+        if (!string.IsNullOrWhiteSpace(userCartPath))
+        {
+            try
+            {
+                if (System.IO.File.Exists(userCartPath))
+                {
+                    var fileJson = System.IO.File.ReadAllText(userCartPath);
+                    if (!string.IsNullOrWhiteSpace(fileJson))
+                    {
+                        return JsonSerializer.Deserialize<List<CartItem>>(fileJson) ?? [];
+                    }
+                }
+
+                // One-time migration from session cart to user cart after login.
+                var sessionJson = HttpContext.Session.GetString(CartSessionKey);
+                if (!string.IsNullOrWhiteSpace(sessionJson))
+                {
+                    var migrated = JsonSerializer.Deserialize<List<CartItem>>(sessionJson) ?? [];
+                    SaveCart(migrated);
+                    HttpContext.Session.Remove(CartSessionKey);
+                    return migrated;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Could not read persistent cart at {Path}", userCartPath);
+            }
+
+            return [];
+        }
+
         var json = HttpContext.Session.GetString(CartSessionKey);
         if (string.IsNullOrWhiteSpace(json))
         {
@@ -290,6 +351,145 @@ public class HomeController : Controller
 
     private void SaveCart(List<CartItem> cart)
     {
+        var userCartPath = GetUserCartPath();
+        if (!string.IsNullOrWhiteSpace(userCartPath))
+        {
+            try
+            {
+                var dir = Path.GetDirectoryName(userCartPath);
+                if (!string.IsNullOrWhiteSpace(dir))
+                {
+                    Directory.CreateDirectory(dir);
+                }
+
+                System.IO.File.WriteAllText(userCartPath, JsonSerializer.Serialize(cart));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Could not write persistent cart at {Path}", userCartPath);
+            }
+
+            return;
+        }
+
         HttpContext.Session.SetString(CartSessionKey, JsonSerializer.Serialize(cart));
+    }
+
+    private string? GetUserCartPath()
+    {
+        if (!(User.Identity?.IsAuthenticated ?? false))
+        {
+            return null;
+        }
+
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            return null;
+        }
+
+        var hash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(userId)));
+        return Path.Combine(_appDataPathProvider.DataDirectory, "carts", $"{hash}.json");
+    }
+
+    private string? GetUserOrdersPath()
+    {
+        if (!(User.Identity?.IsAuthenticated ?? false))
+        {
+            return null;
+        }
+
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            return null;
+        }
+
+        var hash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(userId)));
+        return Path.Combine(_appDataPathProvider.DataDirectory, "orders", $"{hash}.json");
+    }
+
+    private List<OrderRecord> ReadOrders()
+    {
+        var path = GetUserOrdersPath();
+        if (string.IsNullOrWhiteSpace(path) || !System.IO.File.Exists(path))
+        {
+            return [];
+        }
+
+        try
+        {
+            var json = System.IO.File.ReadAllText(path);
+            return JsonSerializer.Deserialize<List<OrderRecord>>(json) ?? [];
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Could not read order history at {Path}", path);
+            return [];
+        }
+    }
+
+    private void WriteOrders(List<OrderRecord> orders)
+    {
+        var path = GetUserOrdersPath();
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            return;
+        }
+
+        try
+        {
+            var dir = Path.GetDirectoryName(path);
+            if (!string.IsNullOrWhiteSpace(dir))
+            {
+                Directory.CreateDirectory(dir);
+            }
+
+            System.IO.File.WriteAllText(path, JsonSerializer.Serialize(orders));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Could not write order history at {Path}", path);
+        }
+    }
+
+    private void SaveOrder(CheckoutViewModel model)
+    {
+        var orders = ReadOrders();
+        orders.Add(new OrderRecord
+        {
+            Id = Guid.NewGuid().ToString("N"),
+            CreatedUtc = DateTime.UtcNow,
+            FullName = model.FullName,
+            Email = model.Email,
+            Street = model.Street,
+            PostalCode = model.PostalCode,
+            City = model.City,
+            NetTotal = model.NetTotal,
+            VatAmount = model.VatAmount,
+            GrossTotal = model.GrossTotal,
+            Items = model.Items.Select(i => new CartItem
+            {
+                ProductId = i.ProductId,
+                ProductName = i.ProductName,
+                ProductDescription = i.ProductDescription,
+                ProductImageUrl = i.ProductImageUrl,
+                BasePrice = i.BasePrice,
+                SelectedOptions = i.SelectedOptions.Select(o => new ShopOption
+                {
+                    Id = o.Id,
+                    GroupName = o.GroupName,
+                    NameDe = o.NameDe,
+                    NameEn = o.NameEn,
+                    DescriptionDe = o.DescriptionDe,
+                    DescriptionEn = o.DescriptionEn,
+                    ImageUrl = o.ImageUrl,
+                    IsRequiredGroup = o.IsRequiredGroup,
+                    PriceDelta = o.PriceDelta
+                }).ToList()
+            }).ToList()
+        });
+
+        WriteOrders(orders);
     }
 }
