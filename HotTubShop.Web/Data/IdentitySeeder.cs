@@ -26,6 +26,7 @@ public static class IdentitySeeder
         }
 
         var user = await userManager.FindByEmailAsync(options.Email);
+        user ??= await userManager.FindByNameAsync(options.Email);
         if (user is null)
         {
             if (string.IsNullOrWhiteSpace(options.Password))
@@ -43,7 +44,8 @@ public static class IdentitySeeder
             var createResult = await userManager.CreateAsync(user, options.Password);
             if (!createResult.Succeeded)
             {
-                return;
+                var errors = string.Join("; ", createResult.Errors.Select(e => $"{e.Code}:{e.Description}"));
+                throw new InvalidOperationException($"Unable to create seeded admin user '{options.Email}'. {errors}");
             }
         }
         else
@@ -57,18 +59,37 @@ public static class IdentitySeeder
 
             if (!string.IsNullOrWhiteSpace(options.Password))
             {
-                var token = await userManager.GeneratePasswordResetTokenAsync(user);
-                var resetResult = await userManager.ResetPasswordAsync(user, token, options.Password);
+                IdentityResult resetResult;
+                if (await userManager.HasPasswordAsync(user))
+                {
+                    var token = await userManager.GeneratePasswordResetTokenAsync(user);
+                    resetResult = await userManager.ResetPasswordAsync(user, token, options.Password);
+                }
+                else
+                {
+                    resetResult = await userManager.AddPasswordAsync(user, options.Password);
+                }
+
                 if (!resetResult.Succeeded)
                 {
-                    return;
+                    var errors = string.Join("; ", resetResult.Errors.Select(e => $"{e.Code}:{e.Description}"));
+                    throw new InvalidOperationException($"Unable to set password for seeded admin user '{options.Email}'. {errors}");
                 }
             }
+
+            // If lockout was triggered by failed attempts, clear it for admin bootstrap.
+            await userManager.SetLockoutEndDateAsync(user, null);
+            await userManager.ResetAccessFailedCountAsync(user);
         }
 
         if (!await userManager.IsInRoleAsync(user, "Admin"))
         {
-            await userManager.AddToRoleAsync(user, "Admin");
+            var addRoleResult = await userManager.AddToRoleAsync(user, "Admin");
+            if (!addRoleResult.Succeeded)
+            {
+                var errors = string.Join("; ", addRoleResult.Errors.Select(e => $"{e.Code}:{e.Description}"));
+                throw new InvalidOperationException($"Unable to assign Admin role to '{options.Email}'. {errors}");
+            }
         }
     }
 }
