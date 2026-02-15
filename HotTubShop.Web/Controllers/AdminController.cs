@@ -3,6 +3,7 @@ using HotTubShop.Web.Services;
 using HotTubShop.Web.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Globalization;
 
 namespace HotTubShop.Web.Controllers;
 
@@ -29,6 +30,11 @@ public class AdminController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> CreateProduct(AdminProductEditViewModel model)
     {
+        if (!TryParseMoney(model.BasePrice, out var basePrice))
+        {
+            ModelState.AddModelError(nameof(model.BasePrice), "Bitte einen gültigen Preis eingeben (z. B. 19999,00).");
+        }
+
         if (!ModelState.IsValid)
         {
             return View(model);
@@ -42,7 +48,7 @@ public class AdminController : Controller
             DescriptionDe = model.DescriptionDe,
             DescriptionEn = string.IsNullOrWhiteSpace(model.DescriptionEn) ? model.DescriptionDe : model.DescriptionEn,
             ImageUrl = model.ImageUrl,
-            BasePrice = model.BasePrice
+            BasePrice = basePrice
         });
 
         return RedirectToAction(nameof(Index));
@@ -66,7 +72,7 @@ public class AdminController : Controller
             DescriptionDe = product.DescriptionDe,
             DescriptionEn = product.DescriptionEn,
             ImageUrl = product.ImageUrl,
-            BasePrice = product.BasePrice
+            BasePrice = product.BasePrice.ToString("0.##", CultureInfo.CurrentCulture)
         });
     }
 
@@ -74,6 +80,11 @@ public class AdminController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> EditProduct(AdminProductEditViewModel model)
     {
+        if (!TryParseMoney(model.BasePrice, out var basePrice))
+        {
+            ModelState.AddModelError(nameof(model.BasePrice), "Bitte einen gültigen Preis eingeben (z. B. 19999,00).");
+        }
+
         if (!ModelState.IsValid)
         {
             return View(model);
@@ -91,7 +102,7 @@ public class AdminController : Controller
         existing.DescriptionDe = model.DescriptionDe;
         existing.DescriptionEn = string.IsNullOrWhiteSpace(model.DescriptionEn) ? model.DescriptionDe : model.DescriptionEn;
         existing.ImageUrl = model.ImageUrl;
-        existing.BasePrice = model.BasePrice;
+        existing.BasePrice = basePrice;
 
         await _catalogService.UpdateProductAsync(existing);
         return RedirectToAction(nameof(Index));
@@ -127,6 +138,11 @@ public class AdminController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> AddOption(AdminOptionEditViewModel model)
     {
+        if (!TryParseMoney(model.PriceDelta, out var priceDelta))
+        {
+            ModelState.AddModelError(nameof(model.PriceDelta), "Bitte einen gültigen Aufpreis eingeben (z. B. 499,00).");
+        }
+
         if (!ModelState.IsValid)
         {
             return View(model);
@@ -137,7 +153,7 @@ public class AdminController : Controller
             GroupName = model.GroupName,
             NameDe = model.NameDe,
             NameEn = string.IsNullOrWhiteSpace(model.NameEn) ? model.NameDe : model.NameEn,
-            PriceDelta = model.PriceDelta
+            PriceDelta = priceDelta
         });
 
         return RedirectToAction(nameof(ProductOptions), new { id = model.ProductId });
@@ -160,7 +176,7 @@ public class AdminController : Controller
             GroupName = option.GroupName,
             NameDe = option.NameDe,
             NameEn = option.NameEn,
-            PriceDelta = option.PriceDelta
+            PriceDelta = option.PriceDelta.ToString("0.##", CultureInfo.CurrentCulture)
         });
     }
 
@@ -168,6 +184,11 @@ public class AdminController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> EditOption(AdminOptionEditViewModel model)
     {
+        if (!TryParseMoney(model.PriceDelta, out var priceDelta))
+        {
+            ModelState.AddModelError(nameof(model.PriceDelta), "Bitte einen gültigen Aufpreis eingeben (z. B. 499,00).");
+        }
+
         if (!ModelState.IsValid)
         {
             return View(model);
@@ -179,7 +200,7 @@ public class AdminController : Controller
             GroupName = model.GroupName,
             NameDe = model.NameDe,
             NameEn = string.IsNullOrWhiteSpace(model.NameEn) ? model.NameDe : model.NameEn,
-            PriceDelta = model.PriceDelta
+            PriceDelta = priceDelta
         });
 
         return RedirectToAction(nameof(ProductOptions), new { id = model.ProductId });
@@ -191,5 +212,20 @@ public class AdminController : Controller
     {
         await _catalogService.DeleteOptionAsync(productId, optionId);
         return RedirectToAction(nameof(ProductOptions), new { id = productId });
+    }
+
+    private static bool TryParseMoney(string? value, out decimal result)
+    {
+        var normalized = (value ?? string.Empty).Trim();
+        if (string.IsNullOrWhiteSpace(normalized))
+        {
+            result = 0m;
+            return false;
+        }
+
+        normalized = normalized.Replace(" ", string.Empty);
+        return decimal.TryParse(normalized, NumberStyles.Number, CultureInfo.CurrentCulture, out result)
+            || decimal.TryParse(normalized, NumberStyles.Number, CultureInfo.GetCultureInfo("de-DE"), out result)
+            || decimal.TryParse(normalized, NumberStyles.Number, CultureInfo.InvariantCulture, out result);
     }
 }

@@ -25,7 +25,7 @@ public class AdminProductEditViewModel
     [Display(Name = "Bild URL")]
     public string? ImageUrl { get; set; }
 
-    [Range(0, 999999)]
+    [Required]
     [Display(Name = "Basispreis")]
-    public decimal BasePrice { get; set; }
+    public string BasePrice { get; set; } = string.Empty;
 }

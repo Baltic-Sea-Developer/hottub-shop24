@@ -18,7 +18,7 @@ public class AdminOptionEditViewModel
     [Display(Name = "Name (English)")]
     public string? NameEn { get; set; }
 
-    [Range(0, 999999)]
+    [Required]
     [Display(Name = "Preisaufschlag")]
-    public decimal PriceDelta { get; set; }
+    public string PriceDelta { get; set; } = string.Empty;
 }
