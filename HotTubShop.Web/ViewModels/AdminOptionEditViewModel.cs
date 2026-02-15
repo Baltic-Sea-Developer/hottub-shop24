@@ -5,7 +5,7 @@ namespace HotTubShop.Web.ViewModels;
 public class AdminOptionEditViewModel
 {
     public string ProductId { get; set; } = string.Empty;
-    public string Id { get; set; } = string.Empty;
+    public string? Id { get; set; }
 
     [Required]
     [Display(Name = "Gruppe")]

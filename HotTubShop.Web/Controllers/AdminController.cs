@@ -32,6 +32,7 @@ public class AdminController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> CreateProduct(AdminProductEditViewModel model)
     {
+        ModelState.Remove(nameof(model.Id));
         ModelState.Remove(nameof(model.NameEn));
         ModelState.Remove(nameof(model.DescriptionDe));
         ModelState.Remove(nameof(model.DescriptionEn));
@@ -52,6 +53,7 @@ public class AdminController : Controller
         {
             await _catalogService.AddProductAsync(new HotTubProduct
             {
+                Id = Guid.NewGuid().ToString("N"),
                 Sku = model.Sku,
                 NameDe = model.NameDe,
                 NameEn = string.IsNullOrWhiteSpace(model.NameEn) ? model.NameDe : model.NameEn,
@@ -173,6 +175,7 @@ public class AdminController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> AddOption(AdminOptionEditViewModel model)
     {
+        ModelState.Remove(nameof(model.Id));
         ModelState.Remove(nameof(model.NameEn));
 
         if (!TryParseMoney(model.PriceDelta, out var priceDelta))
@@ -190,6 +193,7 @@ public class AdminController : Controller
         {
             await _catalogService.AddOptionAsync(model.ProductId, new ShopOption
             {
+                Id = Guid.NewGuid().ToString("N"),
                 GroupName = model.GroupName,
                 NameDe = model.NameDe,
                 NameEn = string.IsNullOrWhiteSpace(model.NameEn) ? model.NameDe : model.NameEn,

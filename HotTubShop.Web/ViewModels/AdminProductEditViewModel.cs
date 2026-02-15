@@ -4,7 +4,7 @@ namespace HotTubShop.Web.ViewModels;
 
 public class AdminProductEditViewModel
 {
-    public string Id { get; set; } = string.Empty;
+    public string? Id { get; set; }
 
     [Required]
     public string Sku { get; set; } = string.Empty;
