@@ -1,4 +1,4 @@
-﻿@model HotTubProduct
+@model HotTubProduct
 @{
     ViewData["Title"] = "Optionen";
 }
@@ -6,7 +6,6 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
     <div>
         <h1 class="h3 mb-0">Optionen: @Model.NameDe</h1>
-        <small class="text-secondary">@Model.Sku</small>
     </div>
     <div class="d-flex gap-2">
         <a class="btn btn-outline-secondary" asp-action="Index">Zurück</a>
@@ -14,36 +13,47 @@
     </div>
 </div>
 
-<div class="table-responsive product-card p-2">
-    <table class="table table-hover mb-0 align-middle">
-        <thead>
-            <tr>
-                <th>Gruppe</th>
-                <th>Name (DE)</th>
-                <th>Aufpreis</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-        @foreach (var option in Model.Options.OrderBy(o => o.GroupName).ThenBy(o => o.NameDe))
-        {
-            <tr>
-                <td>@option.GroupName</td>
-                <td>@option.NameDe</td>
-                <td>+@option.PriceDelta.ToString("N0") EUR</td>
-                <td class="text-end">
-                    <a class="btn btn-sm btn-outline-primary" asp-action="EditOption" asp-route-productId="@Model.Id" asp-route-optionId="@option.Id">Bearbeiten</a>
-                    <form asp-action="DeleteOption" method="post" class="d-inline">
-                        @Html.AntiForgeryToken()
-                        <input type="hidden" name="productId" value="@Model.Id" />
-                        <input type="hidden" name="optionId" value="@option.Id" />
-                        <button class="btn btn-sm btn-outline-danger" type="submit">Löschen</button>
-                    </form>
-                </td>
-            </tr>
-        }
-        </tbody>
-    </table>
-</div>
-
-
+@foreach (var group in Model.Options.OrderBy(o => o.GroupName).ThenBy(o => o.NameDe).GroupBy(o => o.GroupName))
+{
+    <section class="product-card p-3 mb-3">
+        <h2 class="h5 mb-3">@group.Key</h2>
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle">
+                <thead>
+                    <tr>
+                        <th>Bild</th>
+                        <th>Name (DE)</th>
+                        <th>Name (EN)</th>
+                        <th>Aufpreis</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var option in group)
+                    {
+                        <tr>
+                            <td>
+                                @if (!string.IsNullOrWhiteSpace(option.ImageUrl))
+                                {
+                                    <img src="@option.ImageUrl" alt="@option.NameDe" class="option-thumb" />
+                                }
+                            </td>
+                            <td>@option.NameDe</td>
+                            <td>@option.NameEn</td>
+                            <td>+@option.PriceDelta.ToString("N0") EUR</td>
+                            <td class="text-end">
+                                <a class="btn btn-sm btn-outline-primary" asp-action="EditOption" asp-route-productId="@Model.Id" asp-route-optionId="@option.Id">Bearbeiten</a>
+                                <form asp-action="DeleteOption" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="productId" value="@Model.Id" />
+                                    <input type="hidden" name="optionId" value="@option.Id" />
+                                    <button class="btn btn-sm btn-outline-danger" type="submit">Löschen</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </section>
+}

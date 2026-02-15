@@ -7,15 +7,34 @@
     <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
 
     <div class="row g-3">
+        <div class="col-md-6">
+            <label class="form-label">Bestehende Gruppe</label>
+            <select asp-for="SelectedGroup" class="form-select">
+                <option value="">-- Gruppe wählen --</option>
+                @foreach (var g in Model.ExistingGroups)
+                {
+                    <option value="@g">@g</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Neue Gruppe</label>
+            <input asp-for="NewGroupName" class="form-control" placeholder="z. B. Ofen, Isolierung, LED" />
+        </div>
         <div class="col-md-4">
             <label asp-for="GroupName" class="form-label"></label>
-            <input asp-for="GroupName" class="form-control" />
+            <input asp-for="GroupName" class="form-control" readonly />
             <span asp-validation-for="GroupName" class="text-danger"></span>
         </div>
         <div class="col-md-4">
             <label asp-for="PriceDelta" class="form-label"></label>
             <input asp-for="PriceDelta" class="form-control" />
             <span asp-validation-for="PriceDelta" class="text-danger"></span>
+        </div>
+        <div class="col-md-12">
+            <label asp-for="ImageUrl" class="form-label"></label>
+            <input asp-for="ImageUrl" class="form-control" placeholder="/img/options/ofen-premium.jpg oder https://..." />
+            <span asp-validation-for="ImageUrl" class="text-danger"></span>
         </div>
         <div class="col-md-6">
             <label asp-for="NameDe" class="form-label"></label>

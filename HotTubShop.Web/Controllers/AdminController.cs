@@ -166,9 +166,11 @@ public class AdminController : Controller
     }
 
     [HttpGet]
-    public IActionResult AddOption(string productId)
+    public async Task<IActionResult> AddOption(string productId)
     {
-        return View(new AdminOptionEditViewModel { ProductId = productId });
+        var model = new AdminOptionEditViewModel { ProductId = productId };
+        await PopulateOptionGroups(model);
+        return View(model);
     }
 
     [HttpPost]
@@ -177,6 +179,12 @@ public class AdminController : Controller
     {
         ModelState.Remove(nameof(model.Id));
         ModelState.Remove(nameof(model.NameEn));
+        ModelState.Remove(nameof(model.GroupName));
+        model.GroupName = ResolveGroupName(model);
+        if (string.IsNullOrWhiteSpace(model.GroupName))
+        {
+            ModelState.AddModelError(nameof(model.GroupName), "Bitte bestehende Gruppe wählen oder neue Gruppe eingeben.");
+        }
 
         if (!TryParseMoney(model.PriceDelta, out var priceDelta))
         {
@@ -185,6 +193,7 @@ public class AdminController : Controller
 
         if (!ModelState.IsValid)
         {
+            await PopulateOptionGroups(model);
             TempData["AdminError"] = JoinModelStateErrors();
             return View(model);
         }
@@ -197,6 +206,7 @@ public class AdminController : Controller
                 GroupName = model.GroupName,
                 NameDe = model.NameDe,
                 NameEn = string.IsNullOrWhiteSpace(model.NameEn) ? model.NameDe : model.NameEn,
+                ImageUrl = model.ImageUrl ?? string.Empty,
                 PriceDelta = priceDelta
             });
         }
@@ -221,15 +231,19 @@ public class AdminController : Controller
             return NotFound();
         }
 
-        return View(new AdminOptionEditViewModel
+        var model = new AdminOptionEditViewModel
         {
             ProductId = productId,
             Id = option.Id,
             GroupName = option.GroupName,
+            SelectedGroup = option.GroupName,
             NameDe = option.NameDe,
             NameEn = option.NameEn,
+            ImageUrl = option.ImageUrl,
             PriceDelta = option.PriceDelta.ToString("0.##", CultureInfo.CurrentCulture)
-        });
+        };
+        await PopulateOptionGroups(model);
+        return View(model);
     }
 
     [HttpPost]
@@ -237,6 +251,12 @@ public class AdminController : Controller
     public async Task<IActionResult> EditOption(AdminOptionEditViewModel model)
     {
         ModelState.Remove(nameof(model.NameEn));
+        ModelState.Remove(nameof(model.GroupName));
+        model.GroupName = ResolveGroupName(model);
+        if (string.IsNullOrWhiteSpace(model.GroupName))
+        {
+            ModelState.AddModelError(nameof(model.GroupName), "Bitte bestehende Gruppe wählen oder neue Gruppe eingeben.");
+        }
 
         if (!TryParseMoney(model.PriceDelta, out var priceDelta))
         {
@@ -245,6 +265,7 @@ public class AdminController : Controller
 
         if (!ModelState.IsValid)
         {
+            await PopulateOptionGroups(model);
             TempData["AdminError"] = JoinModelStateErrors();
             return View(model);
         }
@@ -257,6 +278,7 @@ public class AdminController : Controller
                 GroupName = model.GroupName,
                 NameDe = model.NameDe,
                 NameEn = string.IsNullOrWhiteSpace(model.NameEn) ? model.NameDe : model.NameEn,
+                ImageUrl = model.ImageUrl ?? string.Empty,
                 PriceDelta = priceDelta
             });
         }
@@ -304,5 +326,23 @@ public class AdminController : Controller
         var message = errors.Count == 0 ? "Unbekannter Validierungsfehler." : string.Join(" | ", errors);
         _logger.LogWarning("Admin form validation failed: {Message}", message);
         return message;
+    }
+
+    private static string ResolveGroupName(AdminOptionEditViewModel model)
+    {
+        return string.IsNullOrWhiteSpace(model.NewGroupName)
+            ? (model.SelectedGroup ?? model.GroupName ?? string.Empty).Trim()
+            : model.NewGroupName.Trim();
+    }
+
+    private async Task PopulateOptionGroups(AdminOptionEditViewModel model)
+    {
+        var product = await _catalogService.GetByIdAsync(model.ProductId);
+        model.ExistingGroups = product?.Options
+            .Select(o => o.GroupName)
+            .Where(g => !string.IsNullOrWhiteSpace(g))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(g => g)
+            .ToList() ?? [];
     }
 }

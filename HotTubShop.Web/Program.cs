@@ -12,6 +12,14 @@ builder.Services.AddSingleton(new AppDataPathProvider { DataDirectory = appDataP
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.Cookie.Name = ".HotTubShop24.Session";
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+    options.IdleTimeout = TimeSpan.FromHours(4);
+});
 builder.Services.AddSingleton<IProductCatalogService, JsonProductCatalogService>();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite($"Data Source={Path.Combine(appDataPath, "auth.db")}"));
@@ -42,6 +50,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+app.UseSession();
 
 app.Use(async (context, next) =>
 {

@@ -104,6 +104,14 @@ h1, h2, h3, .navbar-brand {
   background: rgba(255, 255, 255, 0.5);
 }
 
+.option-thumb {
+  width: 42px;
+  height: 42px;
+  object-fit: cover;
+  border-radius: 0.4rem;
+  border: 1px solid rgba(39, 65, 63, 0.2);
+}
+
 .legal-content h2 {
   font-size: 1.15rem;
   margin-top: 1.5rem;

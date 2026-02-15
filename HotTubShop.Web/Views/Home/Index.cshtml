@@ -1,4 +1,4 @@
-@model HomeIndexViewModel
+﻿@model HomeIndexViewModel
 @{
     ViewData["Title"] = Model.Language == "en" ? "Nordic Hot Tubs" : "Nordische Whirlpools";
 }
@@ -7,7 +7,7 @@
     <div class="hero-content">
         <p class="eyebrow">@(Model.Language == "en" ? "Nordic relaxation at home" : "Nordische Entspannung zuhause")</p>
         <h1>@(Model.Language == "en" ? "Build your perfect hot tub setup" : "Stelle deinen perfekten Whirlpool zusammen")</h1>
-        <p>@(Model.Language == "en" ? "Inspired by Scandinavian spa culture: natural materials, calm colors and warm water in fresh air." : "Inspiriert von skandinavischer Spa-Kultur: nat�rliche Materialien, ruhige Farben und warmes Wasser an klarer Luft.")</p>
+        <p>@(Model.Language == "en" ? "Inspired by Scandinavian spa culture: natural materials, calm colors and warm water in fresh air." : "Inspiriert von skandinavischer Spa-Kultur: natürliche Materialien, ruhige Farben und warmes Wasser an klarer Luft.")</p>
     </div>
 </section>
 
@@ -27,7 +27,6 @@ else
                 <article class="product-card h-100">
                     <img src="@product.ImageUrl" alt="@product.LocalizedName(Model.Language)" class="product-image" />
                     <div class="p-3 p-lg-4">
-                        <small class="text-secondary">@product.Sku</small>
                         <h3 class="h5 mt-1">@product.LocalizedName(Model.Language)</h3>
                         <p class="small mb-3">@product.LocalizedDescription(Model.Language)</p>
                         <div class="d-flex align-items-center justify-content-between">
@@ -40,5 +39,3 @@ else
         }
     </div>
 }
-
-

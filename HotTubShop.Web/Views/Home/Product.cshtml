@@ -1,15 +1,14 @@
-@model ProductConfiguratorViewModel
+ï»¿@model ProductConfiguratorViewModel
 @{
     ViewData["Title"] = Model.Product.LocalizedName(Model.Language);
 }
 
-<a class="btn btn-link px-0 mb-3" asp-controller="Home" asp-action="Index" asp-route-lang="@Model.Language">@(Model.Language == "en" ? "Back to catalog" : "Zurück zum Katalog")</a>
+<a class="btn btn-link px-0 mb-3" asp-controller="Home" asp-action="Index" asp-route-lang="@Model.Language">@(Model.Language == "en" ? "Back to catalog" : "ZurÃ¼ck zum Katalog")</a>
 
 <div class="row g-4">
     <div class="col-lg-5">
         <img src="@Model.Product.ImageUrl" alt="@Model.Product.LocalizedName(Model.Language)" class="detail-image" />
         <div class="product-card mt-3 p-3">
-            <small class="text-secondary">@Model.Product.Sku</small>
             <h1 class="h3 mt-1">@Model.Product.LocalizedName(Model.Language)</h1>
             <p>@Model.Product.LocalizedDescription(Model.Language)</p>
             <p class="mb-0"><strong>Basis: @Model.Product.BasePrice.ToString("N0") EUR</strong></p>
@@ -21,7 +20,7 @@
             @Html.AntiForgeryToken()
             <input type="hidden" asp-for="Language" />
             <input type="hidden" asp-for="Product.Id" />
-            <h2 class="h5 mb-3">@(Model.Language == "en" ? "Select modules" : "Zusatzbausteine Wählen")</h2>
+            <h2 class="h5 mb-3">@(Model.Language == "en" ? "Select modules" : "Zusatzbausteine WÃ¤hlen")</h2>
 
             @foreach (var group in Model.Product.Options.GroupBy(o => o.GroupName))
             {
@@ -29,10 +28,15 @@
                     <h3 class="h6 text-uppercase text-secondary">@group.Key</h3>
                     @foreach (var option in group)
                     {
-                        var isChecked = Model.SelectedOptionIds.Contains(option.Id);
+                        Model.SelectedByGroup.TryGetValue(group.Key, out var selectedId);
+                        var isChecked = selectedId == option.Id;
                         <div class="form-check option-item p-2 rounded">
-                            <input class="form-check-input" type="checkbox" name="SelectedOptionIds" value="@option.Id" checked="@isChecked" id="opt_@option.Id" />
+                            <input class="form-check-input" type="radio" name="SelectedByGroup[@group.Key]" value="@option.Id" checked="@isChecked" id="opt_@option.Id" />
                             <label class="form-check-label w-100" for="opt_@option.Id">
+                                @if (!string.IsNullOrWhiteSpace(option.ImageUrl))
+                                {
+                                    <img src="@option.ImageUrl" alt="@option.LocalizedName(Model.Language)" class="option-thumb me-2" />
+                                }
                                 <span>@option.LocalizedName(Model.Language)</span>
                                 <span class="float-end">+@option.PriceDelta.ToString("N0") EUR</span>
                             </label>
@@ -57,8 +61,17 @@
                 <div class="alert alert-light mb-0">
                     <strong>@(Model.Language == "en" ? "Total" : "Gesamtpreis"): @Model.Configured.TotalPrice.ToString("N0") EUR</strong>
                 </div>
+                <form method="post" asp-action="AddToCart" class="mt-3">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="Language" />
+                    <input type="hidden" asp-for="Product.Id" />
+                    @foreach (var pair in Model.SelectedByGroup)
+                    {
+                        <input type="hidden" name="SelectedByGroup[@pair.Key]" value="@pair.Value" />
+                    }
+                    <button type="submit" class="btn btn-success">@(Model.Language == "en" ? "Add to cart" : "In den Warenkorb")</button>
+                </form>
             </section>
         }
     </div>
 </div>
-

@@ -1,0 +1,59 @@
+@model CheckoutViewModel
+@{
+    ViewData["Title"] = Model.Language == "en" ? "Checkout" : "Kasse";
+}
+
+<h1 class="h3 mb-3">@ViewData["Title"]</h1>
+
+@if (Model.Submitted)
+{
+    <section class="product-card p-4">
+        <h2 class="h5">@(Model.Language == "en" ? "Order request received" : "Bestellanfrage eingegangen")</h2>
+        <p class="mb-0">@(Model.Language == "en" ? "Thank you. We will contact you with bank transfer details." : "Danke. Wir melden uns mit den Zahlungsinformationen zur Vorkasse.")</p>
+    </section>
+}
+else
+{
+    <form method="post" class="product-card p-3 p-lg-4">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Language" />
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label asp-for="FullName" class="form-label"></label>
+                <input asp-for="FullName" class="form-control" />
+                <span asp-validation-for="FullName" class="text-danger"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Email" class="form-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="col-md-8">
+                <label asp-for="Street" class="form-label"></label>
+                <input asp-for="Street" class="form-control" />
+                <span asp-validation-for="Street" class="text-danger"></span>
+            </div>
+            <div class="col-md-2">
+                <label asp-for="PostalCode" class="form-label"></label>
+                <input asp-for="PostalCode" class="form-control" />
+                <span asp-validation-for="PostalCode" class="text-danger"></span>
+            </div>
+            <div class="col-md-2">
+                <label asp-for="City" class="form-label"></label>
+                <input asp-for="City" class="form-control" />
+                <span asp-validation-for="City" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="mt-4 d-flex gap-2">
+            <a class="btn btn-outline-secondary" asp-action="Cart" asp-route-lang="@Model.Language">@(Model.Language == "en" ? "Back to cart" : "Zurück zum Warenkorb")</a>
+            <button type="submit" class="btn btn-primary">@(Model.Language == "en" ? "Place order request" : "Bestellanfrage senden")</button>
+        </div>
+    </form>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
