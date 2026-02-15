@@ -8,22 +8,75 @@
     <h1>@ViewData["Title"]</h1>
 
     <h2>@(isEn ? "Delivery areas" : "Liefergebiete")</h2>
-    <p>[Deutschland und EU-Lieferländer konkret benennen, ggf. Ausschlüsse]</p>
+    @if (isEn)
+    {
+        <p>
+            Delivery is currently available only within Germany.
+            Orders with a delivery address outside Germany are not accepted at this time.
+        </p>
+    }
+    else
+    {
+        <p>
+            Der Versand erfolgt derzeit ausschließlich innerhalb Deutschlands.
+            Bestellungen mit Lieferadresse außerhalb Deutschlands können aktuell nicht angenommen werden.
+        </p>
+    }
 
     <h2>@(isEn ? "Shipping costs" : "Versandkosten")</h2>
-    <p>[Versandkosten nach Land/PLZ/Bordsteinkante/Montage transparent ausweisen]</p>
+    @if (isEn)
+    {
+        <p>
+            Shipping costs are shown separately during checkout and in the order overview before you place your order.
+        </p>
+    }
+    else
+    {
+        <p>
+            Die Versandkosten werden im Checkout sowie in der Bestellübersicht vor Abgabe der Bestellung gesondert ausgewiesen.
+        </p>
+    }
 
     <h2>@(isEn ? "Delivery times" : "Lieferzeiten")</h2>
-    <p>[Lieferzeit je Produkt und Land, Hinweis bei Vorkasse]</p>
+    @if (isEn)
+    {
+        <p>
+            Unless otherwise stated in the product offer, delivery takes place within Germany within 30 days after receipt of payment.
+            Deliveries are made Monday to Saturday. No deliveries are made on Sundays and public holidays.
+        </p>
+    }
+    else
+    {
+        <p>
+            Soweit in der jeweiligen Produktbeschreibung keine andere Frist angegeben ist, erfolgt die Lieferung innerhalb Deutschlands
+            im Regelfall innerhalb von 30 Tagen nach Zahlungseingang.
+            Die Zustellung erfolgt von Montag bis Samstag. An Sonn- und Feiertagen erfolgt keine Zustellung.
+        </p>
+    }
 
     <h2>@(isEn ? "Payment methods" : "Zahlungsarten")</h2>
-    <p>[z. B. Vorkasse, Kreditkarte, Klarna, PayPal; ggf. Bonitätsprüfungshinweis]</p>
+    @if (isEn)
+    {
+        <p>
+            We currently accept advance payment by bank transfer only.
+            The order amount is due immediately after conclusion of the contract and must be transferred to the account specified in the order confirmation.
+            Shipping starts after full payment has been received.
+        </p>
+    }
+    else
+    {
+        <p>
+            Aktuell bieten wir ausschließlich Vorkasse per Banküberweisung an.
+            Der Rechnungsbetrag ist unmittelbar nach Vertragsschluss fällig und auf das in der Bestellbestätigung genannte Konto zu überweisen.
+            Der Versand erfolgt nach vollständigem Zahlungseingang.
+        </p>
+    }
 
     <h2>@(isEn ? "Price information" : "Preisangaben")</h2>
     <p>
         @(isEn
             ? "All prices include statutory VAT. Additional shipping costs are shown separately."
-            : "Alle Preise verstehen sich inklusive gesetzlicher Umsatzsteuer. zusätzliche Versandkosten werden gesondert ausgewiesen.")
+            : "Alle Preise verstehen sich inklusive gesetzlicher Umsatzsteuer. Zusätzliche Versandkosten werden gesondert ausgewiesen.")
     </p>
 </section>
 
