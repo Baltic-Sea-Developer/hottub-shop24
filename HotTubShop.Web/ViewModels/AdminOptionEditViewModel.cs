@@ -15,7 +15,6 @@ public class AdminOptionEditViewModel
     [Display(Name = "Name (Deutsch)")]
     public string NameDe { get; set; } = string.Empty;
 
-    [Required]
     [Display(Name = "Name (English)")]
     public string NameEn { get; set; } = string.Empty;
 

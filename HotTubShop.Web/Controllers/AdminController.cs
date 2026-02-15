@@ -38,9 +38,9 @@ public class AdminController : Controller
         {
             Sku = model.Sku,
             NameDe = model.NameDe,
-            NameEn = model.NameEn,
+            NameEn = string.IsNullOrWhiteSpace(model.NameEn) ? model.NameDe : model.NameEn,
             DescriptionDe = model.DescriptionDe,
-            DescriptionEn = model.DescriptionEn,
+            DescriptionEn = string.IsNullOrWhiteSpace(model.DescriptionEn) ? model.DescriptionDe : model.DescriptionEn,
             ImageUrl = model.ImageUrl,
             BasePrice = model.BasePrice
         });
@@ -87,9 +87,9 @@ public class AdminController : Controller
 
         existing.Sku = model.Sku;
         existing.NameDe = model.NameDe;
-        existing.NameEn = model.NameEn;
+        existing.NameEn = string.IsNullOrWhiteSpace(model.NameEn) ? model.NameDe : model.NameEn;
         existing.DescriptionDe = model.DescriptionDe;
-        existing.DescriptionEn = model.DescriptionEn;
+        existing.DescriptionEn = string.IsNullOrWhiteSpace(model.DescriptionEn) ? model.DescriptionDe : model.DescriptionEn;
         existing.ImageUrl = model.ImageUrl;
         existing.BasePrice = model.BasePrice;
 
@@ -136,7 +136,7 @@ public class AdminController : Controller
         {
             GroupName = model.GroupName,
             NameDe = model.NameDe,
-            NameEn = model.NameEn,
+            NameEn = string.IsNullOrWhiteSpace(model.NameEn) ? model.NameDe : model.NameEn,
             PriceDelta = model.PriceDelta
         });
 
@@ -178,7 +178,7 @@ public class AdminController : Controller
             Id = model.Id,
             GroupName = model.GroupName,
             NameDe = model.NameDe,
-            NameEn = model.NameEn,
+            NameEn = string.IsNullOrWhiteSpace(model.NameEn) ? model.NameDe : model.NameEn,
             PriceDelta = model.PriceDelta
         });
 

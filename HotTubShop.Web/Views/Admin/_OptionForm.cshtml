@@ -1,9 +1,10 @@
 @model AdminOptionEditViewModel
 
-<form method="post" class="product-card p-3 p-lg-4">
+<form method="post" asp-action="@(string.IsNullOrWhiteSpace(Model.Id) ? "AddOption" : "EditOption")" class="product-card p-3 p-lg-4">
     @Html.AntiForgeryToken()
     <input type="hidden" asp-for="ProductId" />
     <input type="hidden" asp-for="Id" />
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
 
     <div class="row g-3">
         <div class="col-md-4">
