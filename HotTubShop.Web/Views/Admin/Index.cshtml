@@ -1,4 +1,4 @@
-@model IReadOnlyList<HotTubProduct>
+﻿@model IReadOnlyList<HotTubProduct>
 @{
     ViewData["Title"] = "Admin";
 }
@@ -7,6 +7,7 @@
     <h1 class="h3 mb-0">Produktverwaltung</h1>
     <a class="btn btn-primary" asp-action="CreateProduct">Neues Produkt</a>
 </div>
+<p class="text-secondary mb-3">Gruppen und Optionen werden pro Produkt verwaltet. Nutze dafür den Button „Gruppe/Option anlegen“ in der jeweiligen Zeile.</p>
 
 <div class="table-responsive product-card p-2">
     <table class="table table-hover mb-0 align-middle">
@@ -28,10 +29,11 @@
                 <td class="text-end">
                     <a class="btn btn-sm btn-outline-primary" asp-action="EditProduct" asp-route-id="@item.Id">Bearbeiten</a>
                     <a class="btn btn-sm btn-outline-secondary" asp-action="ProductOptions" asp-route-id="@item.Id">Optionen</a>
+                    <a class="btn btn-sm btn-primary" asp-action="AddOption" asp-route-productId="@item.Id">Gruppe/Option anlegen</a>
                     <form asp-action="DeleteProduct" method="post" class="d-inline">
                         @Html.AntiForgeryToken()
                         <input type="hidden" name="id" value="@item.Id" />
-                        <button class="btn btn-sm btn-outline-danger" type="submit">L�schen</button>
+                        <button class="btn btn-sm btn-outline-danger" type="submit">Löschen</button>
                     </form>
                 </td>
             </tr>
@@ -39,4 +41,3 @@
         </tbody>
     </table>
 </div>
-
