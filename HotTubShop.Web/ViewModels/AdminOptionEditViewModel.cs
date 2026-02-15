@@ -16,7 +16,7 @@ public class AdminOptionEditViewModel
     public string NameDe { get; set; } = string.Empty;
 
     [Display(Name = "Name (English)")]
-    public string NameEn { get; set; } = string.Empty;
+    public string? NameEn { get; set; }
 
     [Range(0, 999999)]
     [Display(Name = "Preisaufschlag")]

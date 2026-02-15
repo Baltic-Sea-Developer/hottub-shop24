@@ -14,16 +14,16 @@ public class AdminProductEditViewModel
     public string NameDe { get; set; } = string.Empty;
 
     [Display(Name = "Name (English)")]
-    public string NameEn { get; set; } = string.Empty;
+    public string? NameEn { get; set; }
 
     [Display(Name = "Beschreibung (Deutsch)")]
-    public string DescriptionDe { get; set; } = string.Empty;
+    public string? DescriptionDe { get; set; }
 
     [Display(Name = "Description (English)")]
-    public string DescriptionEn { get; set; } = string.Empty;
+    public string? DescriptionEn { get; set; }
 
     [Display(Name = "Bild URL")]
-    public string ImageUrl { get; set; } = string.Empty;
+    public string? ImageUrl { get; set; }
 
     [Range(0, 999999)]
     [Display(Name = "Basispreis")]
