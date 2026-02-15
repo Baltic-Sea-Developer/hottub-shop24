@@ -20,7 +20,7 @@ public static class IdentitySeeder
             await roleManager.CreateAsync(new IdentityRole("Admin"));
         }
 
-        if (string.IsNullOrWhiteSpace(options.Email) || string.IsNullOrWhiteSpace(options.Password))
+        if (string.IsNullOrWhiteSpace(options.Email))
         {
             return;
         }
@@ -28,6 +28,11 @@ public static class IdentitySeeder
         var user = await userManager.FindByEmailAsync(options.Email);
         if (user is null)
         {
+            if (string.IsNullOrWhiteSpace(options.Password))
+            {
+                return;
+            }
+
             user = new IdentityUser
             {
                 UserName = options.Email,
