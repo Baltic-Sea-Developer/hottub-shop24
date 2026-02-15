@@ -148,12 +148,18 @@ public class HomeController : Controller
     [HttpGet]
     public IActionResult Checkout(string? lang)
     {
-        if (GetCart().Count == 0)
+        var language = LanguageExtensions.NormalizeLanguage(lang);
+        var cart = GetCart();
+        if (cart.Count == 0)
         {
-            return RedirectToAction(nameof(Cart), new { lang = LanguageExtensions.NormalizeLanguage(lang) });
+            return RedirectToAction(nameof(Cart), new { lang = language });
         }
 
-        return View(new CheckoutViewModel { Language = LanguageExtensions.NormalizeLanguage(lang) });
+        return View(new CheckoutViewModel
+        {
+            Language = language,
+            Items = cart
+        });
     }
 
     [HttpPost]
@@ -161,7 +167,8 @@ public class HomeController : Controller
     public IActionResult Checkout(CheckoutViewModel model)
     {
         model.Language = LanguageExtensions.NormalizeLanguage(model.Language);
-        if (GetCart().Count == 0)
+        model.Items = GetCart();
+        if (model.Items.Count == 0)
         {
             ModelState.AddModelError(string.Empty, model.Language == "en"
                 ? "Your cart is empty."

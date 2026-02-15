@@ -22,11 +22,20 @@ public class AdminOptionEditViewModel
     [Display(Name = "Name (English)")]
     public string? NameEn { get; set; }
 
+    [Display(Name = "Beschreibung (Deutsch, HTML erlaubt)")]
+    public string? DescriptionDe { get; set; }
+
+    [Display(Name = "Description (English, HTML allowed)")]
+    public string? DescriptionEn { get; set; }
+
     [Display(Name = "Bild URL")]
     public string? ImageUrl { get; set; }
 
     [Display(Name = "Bild Upload")]
     public IFormFile? ImageFile { get; set; }
+
+    [Display(Name = "Gruppe ist Pflichtfeld im Shop")]
+    public bool IsRequiredGroup { get; set; }
 
     [Required]
     [Display(Name = "Preisaufschlag")]

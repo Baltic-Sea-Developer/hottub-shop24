@@ -24,7 +24,13 @@ else
                         <ul class="mb-2">
                             @foreach (var option in item.SelectedOptions)
                             {
-                                <li>@option.LocalizedName(Model.Language) (+@option.PriceDelta.ToString("N0") EUR)</li>
+                                <li>
+                                    @option.LocalizedName(Model.Language) (+@option.PriceDelta.ToString("N0") EUR)
+                                    @if (!string.IsNullOrWhiteSpace(option.LocalizedDescription(Model.Language)))
+                                    {
+                                        <div class="small text-muted">@Html.Raw(option.LocalizedDescription(Model.Language))</div>
+                                    }
+                                </li>
                             }
                         </ul>
                         <strong>@item.TotalPrice.ToString("N0") EUR</strong>

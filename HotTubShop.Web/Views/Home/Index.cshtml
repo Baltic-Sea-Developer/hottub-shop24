@@ -28,7 +28,7 @@ else
                     <img src="@product.ImageUrl" alt="@product.LocalizedName(Model.Language)" class="product-image" />
                     <div class="p-3 p-lg-4">
                         <h3 class="h5 mt-1">@product.LocalizedName(Model.Language)</h3>
-                        <p class="small mb-3">@product.LocalizedDescription(Model.Language)</p>
+                        <div class="small mb-3">@Html.Raw(product.LocalizedDescription(Model.Language))</div>
                         <div class="d-flex align-items-center justify-content-between">
                             <strong>ab @product.BasePrice.ToString("N0") EUR</strong>
                             <a class="btn btn-primary" asp-controller="Home" asp-action="Product" asp-route-id="@product.Id" asp-route-lang="@Model.Language">@(Model.Language == "en" ? "Configure" : "Konfigurieren")</a>

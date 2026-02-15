@@ -1,6 +1,7 @@
-@model CheckoutViewModel
+﻿@model CheckoutViewModel
 @{
-    ViewData["Title"] = Model.Language == "en" ? "Checkout" : "Kasse";
+    var isEn = Model.Language == "en";
+    ViewData["Title"] = isEn ? "Checkout" : "Kasse";
 }
 
 <h1 class="h3 mb-3">@ViewData["Title"]</h1>
@@ -8,12 +9,47 @@
 @if (Model.Submitted)
 {
     <section class="product-card p-4">
-        <h2 class="h5">@(Model.Language == "en" ? "Order request received" : "Bestellanfrage eingegangen")</h2>
-        <p class="mb-0">@(Model.Language == "en" ? "Thank you. We will contact you with bank transfer details." : "Danke. Wir melden uns mit den Zahlungsinformationen zur Vorkasse.")</p>
+        <h2 class="h5">@(isEn ? "Order request received" : "Bestellanfrage eingegangen")</h2>
+        <p class="mb-0">@(isEn ? "Thank you. We will contact you with bank transfer details." : "Danke. Wir melden uns mit den Zahlungsinformationen zur Vorkasse.")</p>
     </section>
 }
 else
 {
+    <section class="product-card p-3 p-lg-4 mb-3">
+        <h2 class="h5 mb-3">@(isEn ? "Order summary" : "Bestellzusammenfassung")</h2>
+
+        @for (var i = 0; i < Model.Items.Count; i++)
+        {
+            var item = Model.Items[i];
+            <article class="mb-3 pb-3 border-bottom">
+                <h3 class="h6 mb-2">@item.ProductName</h3>
+                <div class="small text-muted">@(isEn ? "Base price" : "Basispreis"): @item.BasePrice.ToString("N2") EUR</div>
+                @if (item.SelectedOptions.Count > 0)
+                {
+                    <ul class="mb-2 mt-2">
+                        @foreach (var option in item.SelectedOptions)
+                        {
+                            <li>
+                                @option.LocalizedName(Model.Language) (+@option.PriceDelta.ToString("N2") EUR)
+                                @if (!string.IsNullOrWhiteSpace(option.LocalizedDescription(Model.Language)))
+                                {
+                                    <div class="small text-muted">@Html.Raw(option.LocalizedDescription(Model.Language))</div>
+                                }
+                            </li>
+                        }
+                    </ul>
+                }
+                <div><strong>@(isEn ? "Item total" : "Positionssumme"): @item.TotalPrice.ToString("N2") EUR</strong></div>
+            </article>
+        }
+
+        <div class="d-grid gap-1">
+            <div class="d-flex justify-content-between"><span>@(isEn ? "Net total" : "Netto")</span><strong>@Model.NetTotal.ToString("N2") EUR</strong></div>
+            <div class="d-flex justify-content-between"><span>@(isEn ? "VAT (19%)" : "MwSt. (19%)")</span><strong>@Model.VatAmount.ToString("N2") EUR</strong></div>
+            <div class="d-flex justify-content-between"><span>@(isEn ? "Gross total" : "Brutto")</span><strong>@Model.GrossTotal.ToString("N2") EUR</strong></div>
+        </div>
+    </section>
+
     <form method="post" class="product-card p-3 p-lg-4">
         @Html.AntiForgeryToken()
         <input type="hidden" asp-for="Language" />
@@ -45,11 +81,31 @@ else
                 <input asp-for="City" class="form-control" />
                 <span asp-validation-for="City" class="text-danger"></span>
             </div>
+            <div class="col-12 mt-2">
+                <div class="form-check">
+                    <input asp-for="AcceptTerms" class="form-check-input" />
+                    <label asp-for="AcceptTerms" class="form-check-label">
+                        @(isEn ? "I have read and accept the" : "Ich habe die")
+                        <a asp-action="Terms" asp-route-lang="@Model.Language" target="_blank">AGB</a>
+                        @(isEn ? "(Terms and Conditions)." : "gelesen und akzeptiert.")
+                    </label>
+                    <span asp-validation-for="AcceptTerms" class="text-danger d-block"></span>
+                </div>
+                <div class="form-check mt-2">
+                    <input asp-for="AcceptWithdrawal" class="form-check-input" />
+                    <label asp-for="AcceptWithdrawal" class="form-check-label">
+                        @(isEn ? "I have read and accept the" : "Ich habe die")
+                        <a asp-action="Withdrawal" asp-route-lang="@Model.Language" target="_blank">@(isEn ? "withdrawal policy" : "Widerrufsbelehrung")</a>
+                        @(isEn ? "." : "gelesen und akzeptiert.")
+                    </label>
+                    <span asp-validation-for="AcceptWithdrawal" class="text-danger d-block"></span>
+                </div>
+            </div>
         </div>
 
         <div class="mt-4 d-flex gap-2">
-            <a class="btn btn-outline-secondary" asp-action="Cart" asp-route-lang="@Model.Language">@(Model.Language == "en" ? "Back to cart" : "Zurück zum Warenkorb")</a>
-            <button type="submit" class="btn btn-primary">@(Model.Language == "en" ? "Place order request" : "Bestellanfrage senden")</button>
+            <a class="btn btn-outline-secondary" asp-action="Cart" asp-route-lang="@Model.Language">@(isEn ? "Back to cart" : "Zurück zum Warenkorb")</a>
+            <button type="submit" class="btn btn-primary">@(isEn ? "Place order request" : "Bestellanfrage senden")</button>
         </div>
     </form>
 }

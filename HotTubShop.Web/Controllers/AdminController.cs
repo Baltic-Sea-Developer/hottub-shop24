@@ -1,4 +1,4 @@
-using HotTubShop.Web.Models;
+﻿using HotTubShop.Web.Models;
 using HotTubShop.Web.Services;
 using HotTubShop.Web.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -134,6 +134,11 @@ public class AdminController : Controller
             return View(model);
         }
 
+        if (string.IsNullOrWhiteSpace(model.Id))
+        {
+            return NotFound();
+        }
+
         var existing = await _catalogService.GetByIdAsync(model.Id);
         if (existing is null)
         {
@@ -143,8 +148,9 @@ public class AdminController : Controller
         existing.Sku = model.Sku;
         existing.NameDe = model.NameDe;
         existing.NameEn = string.IsNullOrWhiteSpace(model.NameEn) ? model.NameDe : model.NameEn;
-        existing.DescriptionDe = model.DescriptionDe;
-        existing.DescriptionEn = string.IsNullOrWhiteSpace(model.DescriptionEn) ? model.DescriptionDe : model.DescriptionEn;
+        existing.DescriptionDe = model.DescriptionDe ?? string.Empty;
+        existing.DescriptionEn = string.IsNullOrWhiteSpace(model.DescriptionEn) ? (model.DescriptionDe ?? string.Empty) : model.DescriptionEn;
+
         var imageUrl = await ResolveImageUrlAsync(
             currentImageUrl: existing.ImageUrl,
             manualImageUrl: model.ImageUrl,
@@ -155,6 +161,7 @@ public class AdminController : Controller
             TempData["AdminError"] = JoinModelStateErrors();
             return View(model);
         }
+
         existing.ImageUrl = imageUrl;
         existing.BasePrice = basePrice;
 
@@ -207,7 +214,10 @@ public class AdminController : Controller
     {
         ModelState.Remove(nameof(model.Id));
         ModelState.Remove(nameof(model.NameEn));
+        ModelState.Remove(nameof(model.DescriptionDe));
+        ModelState.Remove(nameof(model.DescriptionEn));
         ModelState.Remove(nameof(model.GroupName));
+
         model.GroupName = ResolveGroupName(model);
         if (string.IsNullOrWhiteSpace(model.GroupName))
         {
@@ -246,9 +256,14 @@ public class AdminController : Controller
                 GroupName = model.GroupName,
                 NameDe = model.NameDe,
                 NameEn = string.IsNullOrWhiteSpace(model.NameEn) ? model.NameDe : model.NameEn,
+                DescriptionDe = model.DescriptionDe ?? string.Empty,
+                DescriptionEn = string.IsNullOrWhiteSpace(model.DescriptionEn) ? (model.DescriptionDe ?? string.Empty) : model.DescriptionEn,
                 ImageUrl = imageUrl,
+                IsRequiredGroup = model.IsRequiredGroup,
                 PriceDelta = priceDelta
             });
+
+            await SetGroupRequiredFlagAsync(model.ProductId, model.GroupName, model.IsRequiredGroup);
         }
         catch (Exception ex)
         {
@@ -279,7 +294,10 @@ public class AdminController : Controller
             SelectedGroup = option.GroupName,
             NameDe = option.NameDe,
             NameEn = option.NameEn,
+            DescriptionDe = option.DescriptionDe,
+            DescriptionEn = option.DescriptionEn,
             ImageUrl = option.ImageUrl,
+            IsRequiredGroup = product.Options.Any(o => o.GroupName == option.GroupName && o.IsRequiredGroup),
             PriceDelta = option.PriceDelta.ToString("0.##", CultureInfo.CurrentCulture)
         };
         await PopulateOptionGroups(model);
@@ -291,7 +309,10 @@ public class AdminController : Controller
     public async Task<IActionResult> EditOption(AdminOptionEditViewModel model)
     {
         ModelState.Remove(nameof(model.NameEn));
+        ModelState.Remove(nameof(model.DescriptionDe));
+        ModelState.Remove(nameof(model.DescriptionEn));
         ModelState.Remove(nameof(model.GroupName));
+
         model.GroupName = ResolveGroupName(model);
         if (string.IsNullOrWhiteSpace(model.GroupName))
         {
@@ -328,13 +349,18 @@ public class AdminController : Controller
         {
             await _catalogService.UpdateOptionAsync(model.ProductId, new ShopOption
             {
-                Id = model.Id,
+                Id = model.Id ?? string.Empty,
                 GroupName = model.GroupName,
                 NameDe = model.NameDe,
                 NameEn = string.IsNullOrWhiteSpace(model.NameEn) ? model.NameDe : model.NameEn,
+                DescriptionDe = model.DescriptionDe ?? string.Empty,
+                DescriptionEn = string.IsNullOrWhiteSpace(model.DescriptionEn) ? (model.DescriptionDe ?? string.Empty) : model.DescriptionEn,
                 ImageUrl = imageUrl,
+                IsRequiredGroup = model.IsRequiredGroup,
                 PriceDelta = priceDelta
             });
+
+            await SetGroupRequiredFlagAsync(model.ProductId, model.GroupName, model.IsRequiredGroup);
         }
         catch (Exception ex)
         {
@@ -398,6 +424,22 @@ public class AdminController : Controller
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .OrderBy(g => g)
             .ToList() ?? [];
+    }
+
+    private async Task SetGroupRequiredFlagAsync(string productId, string groupName, bool required)
+    {
+        var product = await _catalogService.GetByIdAsync(productId);
+        if (product is null || string.IsNullOrWhiteSpace(groupName))
+        {
+            return;
+        }
+
+        foreach (var option in product.Options.Where(o => string.Equals(o.GroupName, groupName, StringComparison.OrdinalIgnoreCase)))
+        {
+            option.IsRequiredGroup = required;
+        }
+
+        await _catalogService.UpdateProductAsync(product);
     }
 
     private async Task<string?> ResolveImageUrlAsync(string? currentImageUrl, string? manualImageUrl, IFormFile? imageFile, string folder)

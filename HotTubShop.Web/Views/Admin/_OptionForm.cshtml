@@ -51,6 +51,22 @@
             <input asp-for="NameEn" class="form-control" />
             <span asp-validation-for="NameEn" class="text-danger"></span>
         </div>
+        <div class="col-md-6">
+            <label asp-for="DescriptionDe" class="form-label"></label>
+            <textarea asp-for="DescriptionDe" class="form-control" rows="4"></textarea>
+            <div class="form-text">HTML-Tags sind erlaubt und werden im Shop als HTML dargestellt.</div>
+        </div>
+        <div class="col-md-6">
+            <label asp-for="DescriptionEn" class="form-label"></label>
+            <textarea asp-for="DescriptionEn" class="form-control" rows="4"></textarea>
+            <div class="form-text">HTML tags are allowed and rendered as HTML in the shop.</div>
+        </div>
+        <div class="col-12">
+            <div class="form-check mt-1">
+                <input asp-for="IsRequiredGroup" class="form-check-input" />
+                <label asp-for="IsRequiredGroup" class="form-check-label"></label>
+            </div>
+        </div>
     </div>
 
     <div class="d-flex gap-2 mt-4">

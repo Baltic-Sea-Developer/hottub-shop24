@@ -15,7 +15,7 @@
         <img src="@Model.Product.ImageUrl" alt="@Model.Product.LocalizedName(Model.Language)" class="detail-image" />
         <div class="product-card mt-3 p-3">
             <h1 class="h3 mt-1">@Model.Product.LocalizedName(Model.Language)</h1>
-            <p>@Model.Product.LocalizedDescription(Model.Language)</p>
+            <div>@Html.Raw(Model.Product.LocalizedDescription(Model.Language))</div>
             <p class="mb-0"><strong>Basis: @Model.Product.BasePrice.ToString("N0") EUR</strong></p>
         </div>
     </div>
@@ -60,6 +60,10 @@
                                 }
                                 <span>@option.LocalizedName(Model.Language)</span>
                                 <span class="float-end">+@option.PriceDelta.ToString("N0") EUR</span>
+                                @if (!string.IsNullOrWhiteSpace(option.LocalizedDescription(Model.Language)))
+                                {
+                                    <div class="small text-muted mt-1">@Html.Raw(option.LocalizedDescription(Model.Language))</div>
+                                }
                             </label>
                         </div>
                     }

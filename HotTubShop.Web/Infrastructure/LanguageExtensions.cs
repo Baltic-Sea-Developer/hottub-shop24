@@ -22,4 +22,7 @@ public static class LanguageExtensions
 
     public static string LocalizedName(this ShopOption option, string lang) =>
         lang == "en" && !string.IsNullOrWhiteSpace(option.NameEn) ? option.NameEn : option.NameDe;
+
+    public static string LocalizedDescription(this ShopOption option, string lang) =>
+        lang == "en" && !string.IsNullOrWhiteSpace(option.DescriptionEn) ? option.DescriptionEn : option.DescriptionDe;
 }
