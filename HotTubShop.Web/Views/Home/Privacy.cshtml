@@ -1,52 +1,214 @@
-@{
+﻿@{
     var lang = (ViewData["Lang"] as string) ?? "de";
     var isEn = lang == "en";
-    ViewData["Title"] = isEn ? "Privacy" : "Datenschutzerkl�rung";
+    ViewData["Title"] = isEn ? "Privacy Policy" : "Datenschutzerklärung";
 }
 
 <section class="product-card p-4 legal-content">
     <h1>@ViewData["Title"]</h1>
-    <p>
-        @(isEn
-            ? "Template for orientation only. Legal review is required before production use."
-            : "Vorlage nur zur Orientierung. Vor Produktion ist eine rechtliche Pr�fung erforderlich.")
-    </p>
 
-    <h2>@(isEn ? "Controller" : "Verantwortlicher")</h2>
-    <p>[Firmenname], [Adresse], [E-Mail], [Telefon]</p>
+    @if (!isEn)
+    {
+        <p>
+            Mit dieser Datenschutzerklärung informieren wir über die Verarbeitung personenbezogener Daten beim Besuch
+            und bei der Nutzung des Onlineshops HotTub-Shop24 gemäß Art. 13 DSGVO.
+        </p>
 
-    <h2>@(isEn ? "Data processing when visiting the website" : "Datenverarbeitung beim Besuch der Website")</h2>
-    <p>
-        @(isEn
-            ? "Server log files are processed for technical delivery and security (IP address, date/time, URL, user agent)."
-            : "Zur technischen Auslieferung und Sicherheit werden Server-Logdaten verarbeitet (IP-Adresse, Datum/Uhrzeit, URL, User-Agent).")
-    </p>
+        <h2>1. Verantwortlicher</h2>
+        <p>
+            Sascha Humkamp<br />
+            Am Kornhof 11<br />
+            23744 Schönwalde am Bungsberg<br />
+            Deutschland<br />
+            Telefon: +49 1520 9884111<br />
+            E-Mail: info@hottub-shop24.de
+        </p>
 
-    <h2>@(isEn ? "Order processing" : "Bestellabwicklung")</h2>
-    <p>
-        @(isEn
-            ? "We process master, contact and order data for contract fulfillment (Art. 6(1)(b) GDPR)."
-            : "Wir verarbeiten Stamm-, Kontakt- und Bestelldaten zur Vertragserf�llung (Art. 6 Abs. 1 lit. b DSGVO).")
-    </p>
+        <h2>2. Zwecke, Rechtsgrundlagen und Datenkategorien</h2>
+        <p>
+            Wir verarbeiten personenbezogene Daten nur, soweit dies erforderlich ist. Rechtsgrundlagen sind insbesondere
+            Art. 6 Abs. 1 lit. b DSGVO (Vertrag/Anbahnung), Art. 6 Abs. 1 lit. c DSGVO (rechtliche Pflichten)
+            und Art. 6 Abs. 1 lit. f DSGVO (berechtigte Interessen).
+        </p>
+        <ul>
+            <li>Bereitstellung der Website (Server-Logdaten, technische Sicherheit)</li>
+            <li>Registrierung/Login und Verwaltung von Kundenkonten</li>
+            <li>Vertragsabwicklung (Bestellung, Lieferung, Kommunikation)</li>
+            <li>Erfüllung gesetzlicher Aufbewahrungs- und Nachweispflichten</li>
+            <li>Bearbeitung von Anfragen per E-Mail oder Telefon</li>
+        </ul>
 
-    <h2>@(isEn ? "Payment providers" : "Zahlungsdienstleister")</h2>
-    <p>[Bitte konkret benennen, inkl. Rechtsgrundlage und Drittlandtransfer-Hinweisen]</p>
+        <h2>3. Hosting und Server-Logfiles</h2>
+        <p>
+            Beim Aufruf der Website werden durch den Webserver technisch notwendige Informationen verarbeitet
+            (z. B. IP-Adresse, Datum/Uhrzeit, aufgerufene URL, Referrer, Browser/OS, HTTP-Status).
+            Die Verarbeitung erfolgt zur sicheren und stabilen Bereitstellung der Website (Art. 6 Abs. 1 lit. f DSGVO).
+        </p>
 
-    <h2>Cookies</h2>
-    <p>
-        @(isEn
-            ? "Use a consent tool before setting non-essential cookies (analytics/marketing)."
-            : "Vor dem Setzen nicht notwendiger Cookies (Analytics/Marketing) ist ein Consent-Tool erforderlich.")
-    </p>
+        <h2>4. Registrierung, Login und Konto</h2>
+        <p>
+            Bei Registrierung und Login verarbeiten wir Kontodaten (z. B. E-Mail-Adresse, Passwort-Hash,
+            Anmeldezeitpunkte). Die Verarbeitung erfolgt zur Bereitstellung des Kundenkontos und zur Authentifizierung
+            (Art. 6 Abs. 1 lit. b DSGVO).
+        </p>
 
-    <h2>@(isEn ? "Storage periods" : "Speicherdauer")</h2>
-    <p>[Konkrete Fristen erg�nzen, z. B. handels- und steuerrechtliche Aufbewahrungspflichten]</p>
+        <h2>5. Vertragsabwicklung und Kommunikation</h2>
+        <p>
+            Bei Bestellungen verarbeiten wir die zur Vertragsdurchführung erforderlichen Daten, insbesondere
+            Stamm-, Kontakt-, Bestell- und Kommunikationsdaten (Art. 6 Abs. 1 lit. b DSGVO).
+        </p>
 
-    <h2>@(isEn ? "Data subject rights" : "Betroffenenrechte")</h2>
-    <p>
-        @(isEn
-            ? "You have rights to access, rectification, erasure, restriction, portability and objection, plus complaint rights to a supervisory authority."
-            : "Sie haben Rechte auf Auskunft, Berichtigung, L�schung, Einschr�nkung, Daten�bertragbarkeit und Widerspruch sowie ein Beschwerderecht bei einer Aufsichtsbeh�rde.")
-    </p>
+        <h2>6. Zahlungsdienstleister und Versanddienstleister</h2>
+        <p>
+            Sofern Zahlungs- oder Versanddienstleister eingesetzt werden, übermitteln wir nur die hierfür erforderlichen
+            Daten. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO.
+            Die konkret eingesetzten Anbieter und deren Datenschutzhinweise sind vor Live-Betrieb zu ergänzen.
+        </p>
+
+        <h2>7. Cookies und ähnliche Technologien</h2>
+        <p>
+            Wir verwenden technisch notwendige Cookies (z. B. für Login-Status, Sicherheit/CSRF-Schutz).
+            Rechtsgrundlage ist § 25 Abs. 2 Nr. 2 TDDDG in Verbindung mit Art. 6 Abs. 1 lit. b bzw. lit. f DSGVO.
+            Nicht notwendige Cookies (z. B. Marketing/Tracking) setzen wir nur nach vorheriger Einwilligung
+            (§ 25 Abs. 1 TDDDG, Art. 6 Abs. 1 lit. a DSGVO).
+        </p>
+
+        <h2>8. Schriftarten (Fonts)</h2>
+        <p>
+            Die Website bindet keine Google Fonts von externen Google-Servern ein.
+            Verwendete Schriftarten werden lokal bereitgestellt; es erfolgt insoweit keine Übermittlung personenbezogener
+            Daten an Google allein durch den Seitenaufruf.
+        </p>
+
+        <h2>9. Empfänger und Auftragsverarbeitung</h2>
+        <p>
+            Daten erhalten nur Stellen, die sie zur Erfüllung der jeweiligen Zwecke benötigen
+            (z. B. IT-Hosting, Versand, Zahlungsabwicklung, Steuerberatung). Soweit erforderlich,
+            sind diese Empfänger als Auftragsverarbeiter nach Art. 28 DSGVO eingebunden.
+        </p>
+
+        <h2>10. Drittlandübermittlung</h2>
+        <p>
+            Eine Übermittlung in Drittländer erfolgt nur, wenn dies für den jeweiligen Dienst erforderlich ist
+            oder gesetzlich vorgesehen ist. In diesen Fällen achten wir auf ein angemessenes Datenschutzniveau,
+            z. B. durch EU-Standardvertragsklauseln.
+        </p>
+
+        <h2>11. Speicherdauer</h2>
+        <p>
+            Wir speichern personenbezogene Daten nur so lange, wie dies für die jeweiligen Zwecke erforderlich ist.
+            Darüber hinaus gelten gesetzliche Aufbewahrungsfristen (insb. handels- und steuerrechtlich).
+            Nach Wegfall des Zwecks bzw. Ablauf der Fristen werden die Daten gelöscht oder anonymisiert.
+        </p>
+
+        <h2>12. Rechte betroffener Personen</h2>
+        <p>
+            Sie haben das Recht auf Auskunft (Art. 15 DSGVO), Berichtigung (Art. 16 DSGVO), Löschung (Art. 17 DSGVO),
+            Einschränkung der Verarbeitung (Art. 18 DSGVO), Datenübertragbarkeit (Art. 20 DSGVO) und Widerspruch
+            (Art. 21 DSGVO). Erteilte Einwilligungen können Sie jederzeit mit Wirkung für die Zukunft widerrufen
+            (Art. 7 Abs. 3 DSGVO).
+        </p>
+
+        <h2>13. Beschwerderecht</h2>
+        <p>
+            Sie haben das Recht, sich bei einer Datenschutzaufsichtsbehörde zu beschweren (Art. 77 DSGVO).
+        </p>
+
+        <h2>14. Pflicht zur Bereitstellung von Daten</h2>
+        <p>
+            Die Bereitstellung bestimmter Daten kann für Vertragsschluss und -durchführung erforderlich sein.
+            Ohne diese Daten können wir bestimmte Leistungen ggf. nicht erbringen.
+        </p>
+
+        <h2>15. Automatisierte Entscheidungen</h2>
+        <p>
+            Eine automatisierte Entscheidungsfindung einschließlich Profiling im Sinne von Art. 22 DSGVO
+            findet derzeit nicht statt.
+        </p>
+
+        <p><strong>Stand:</strong> 15. Februar 2026</p>
+    }
+    else
+    {
+        <p>
+            This privacy policy explains how HotTub-Shop24 processes personal data in accordance with Art. 13 GDPR.
+        </p>
+
+        <h2>1. Controller</h2>
+        <p>
+            Sascha Humkamp<br />
+            Am Kornhof 11<br />
+            23744 Schönwalde am Bungsberg<br />
+            Germany<br />
+            Phone: +49 1520 9884111<br />
+            Email: info@hottub-shop24.de
+        </p>
+
+        <h2>2. Purposes and legal bases</h2>
+        <ul>
+            <li>Website delivery and security (Art. 6(1)(f) GDPR)</li>
+            <li>Account registration/login (Art. 6(1)(b) GDPR)</li>
+            <li>Order handling and customer communication (Art. 6(1)(b) GDPR)</li>
+            <li>Legal retention obligations (Art. 6(1)(c) GDPR)</li>
+        </ul>
+
+        <h2>3. Server log files</h2>
+        <p>
+            We process technical log data (e.g. IP address, timestamp, URL, user agent, status code)
+            to provide and secure the website.
+        </p>
+
+        <h2>4. Account and authentication</h2>
+        <p>
+            If you register/login, we process account data (email, password hash, login events)
+            to provide secure account access.
+        </p>
+
+        <h2>5. Orders, payment and shipping</h2>
+        <p>
+            For contract performance, we process required order/contact data and share necessary data with payment
+            and shipping providers.
+        </p>
+
+        <h2>6. Cookies</h2>
+        <p>
+            We use technically necessary cookies (e.g. authentication/security).
+            Non-essential cookies are only used with prior consent.
+        </p>
+
+        <h2>7. Fonts</h2>
+        <p>
+            No remote Google Fonts are loaded from Google servers. Fonts are provided locally.
+        </p>
+
+        <h2>8. Recipients and processors</h2>
+        <p>
+            Data is only shared with recipients required for the stated purposes and, where applicable,
+            under Art. 28 GDPR data processing agreements.
+        </p>
+
+        <h2>9. International transfers</h2>
+        <p>
+            International data transfers are only made where required and with appropriate safeguards
+            (e.g. Standard Contractual Clauses).
+        </p>
+
+        <h2>10. Retention</h2>
+        <p>
+            Data is stored only as long as necessary for the purposes and legal retention obligations.
+        </p>
+
+        <h2>11. Your rights</h2>
+        <p>
+            You have rights of access, rectification, erasure, restriction, portability and objection,
+            plus the right to withdraw consent and to lodge a complaint with a supervisory authority.
+        </p>
+
+        <h2>12. Automated decision-making</h2>
+        <p>
+            We currently do not use automated decision-making within the meaning of Art. 22 GDPR.
+        </p>
+
+        <p><strong>Last updated:</strong> February 15, 2026</p>
+    }
 </section>
-
