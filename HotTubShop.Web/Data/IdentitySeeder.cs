@@ -46,6 +46,25 @@ public static class IdentitySeeder
                 return;
             }
         }
+        else
+        {
+            // Keep seeded admin account operational by aligning email confirmation and optional configured password.
+            if (!user.EmailConfirmed)
+            {
+                user.EmailConfirmed = true;
+                await userManager.UpdateAsync(user);
+            }
+
+            if (!string.IsNullOrWhiteSpace(options.Password))
+            {
+                var token = await userManager.GeneratePasswordResetTokenAsync(user);
+                var resetResult = await userManager.ResetPasswordAsync(user, token, options.Password);
+                if (!resetResult.Succeeded)
+                {
+                    return;
+                }
+            }
+        }
 
         if (!await userManager.IsInRoleAsync(user, "Admin"))
         {
