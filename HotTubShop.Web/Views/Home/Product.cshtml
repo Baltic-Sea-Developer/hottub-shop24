@@ -1,6 +1,11 @@
 ﻿@model ProductConfiguratorViewModel
 @{
     ViewData["Title"] = Model.Product.LocalizedName(Model.Language);
+    var requiredGroups = Model.Product.Options
+        .Where(o => o.IsRequiredGroup)
+        .Select(o => o.GroupName)
+        .Distinct(StringComparer.OrdinalIgnoreCase)
+        .ToList();
 }
 
 <a class="btn btn-link px-0 mb-3" asp-controller="Home" asp-action="Index" asp-route-lang="@Model.Language">@(Model.Language == "en" ? "Back to catalog" : "Zurück zum Katalog")</a>
@@ -16,7 +21,7 @@
     </div>
 
     <div class="col-lg-7">
-        <form method="post" class="product-card p-3 p-lg-4">
+        <form method="post" asp-action="AddToCart" class="product-card p-3 p-lg-4">
             @Html.AntiForgeryToken()
             <input type="hidden" asp-for="Language" />
             <input type="hidden" asp-for="Product.Id" />
@@ -24,14 +29,30 @@
 
             @foreach (var group in Model.Product.Options.GroupBy(o => o.GroupName))
             {
+                var isRequiredGroup = requiredGroups.Contains(group.Key, StringComparer.OrdinalIgnoreCase);
                 <div class="mb-3">
-                    <h3 class="h6 text-uppercase text-secondary">@group.Key</h3>
+                    <h3 class="h6 text-uppercase text-secondary">
+                        @group.Key
+                        @if (isRequiredGroup)
+                        {
+                            <span class="text-danger">*</span>
+                        }
+                    </h3>
                     @foreach (var option in group)
                     {
                         Model.SelectedByGroup.TryGetValue(group.Key, out var selectedId);
                         var isChecked = selectedId == option.Id;
                         <div class="form-check option-item p-2 rounded">
-                            <input class="form-check-input" type="radio" name="SelectedByGroup[@group.Key]" value="@option.Id" checked="@isChecked" id="opt_@option.Id" />
+                            <input
+                                class="form-check-input js-option-radio"
+                                type="radio"
+                                name="SelectedByGroup[@group.Key]"
+                                value="@option.Id"
+                                checked="@isChecked"
+                                id="opt_@option.Id"
+                                data-price="@option.PriceDelta.ToString(System.Globalization.CultureInfo.InvariantCulture)"
+                                data-group="@group.Key"
+                                data-required-group="@isRequiredGroup.ToString().ToLowerInvariant()" />
                             <label class="form-check-label w-100" for="opt_@option.Id">
                                 @if (!string.IsNullOrWhiteSpace(option.ImageUrl))
                                 {
@@ -45,33 +66,82 @@
                 </div>
             }
 
-            <button type="submit" class="btn btn-primary">@(Model.Language == "en" ? "Calculate price" : "Preis berechnen")</button>
-        </form>
-
-        @if (Model.Configured is not null)
-        {
-            <section class="product-card p-3 p-lg-4 mt-3">
-                <h2 class="h5">@(Model.Language == "en" ? "Your configuration" : "Deine Konfiguration")</h2>
-                <ul class="mb-3">
-                    @foreach (var option in Model.Configured.SelectedOptions)
-                    {
-                        <li>@option.LocalizedName(Model.Language) (+@option.PriceDelta.ToString("N0") EUR)</li>
-                    }
-                </ul>
-                <div class="alert alert-light mb-0">
-                    <strong>@(Model.Language == "en" ? "Total" : "Gesamtpreis"): @Model.Configured.TotalPrice.ToString("N0") EUR</strong>
+            <div class="alert alert-light mb-3" id="live-total"
+                 data-base-price="@Model.Product.BasePrice.ToString(System.Globalization.CultureInfo.InvariantCulture)"
+                 data-language="@Model.Language">
+                <strong>@(Model.Language == "en" ? "Total" : "Gesamtpreis"): <span id="live-total-value">@Model.Product.BasePrice.ToString("N0") EUR</span></strong>
+            </div>
+            @if (requiredGroups.Count > 0)
+            {
+                <div class="small text-muted mb-3" id="required-groups-hint">
+                    @(Model.Language == "en"
+                        ? "Please select an option in all required groups (*) to continue."
+                        : "Bitte wähle in allen Pflichtgruppen (*) eine Option, um fortzufahren.")
                 </div>
-                <form method="post" asp-action="AddToCart" class="mt-3">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" asp-for="Language" />
-                    <input type="hidden" asp-for="Product.Id" />
-                    @foreach (var pair in Model.SelectedByGroup)
-                    {
-                        <input type="hidden" name="SelectedByGroup[@pair.Key]" value="@pair.Value" />
-                    }
-                    <button type="submit" class="btn btn-success">@(Model.Language == "en" ? "Add to cart" : "In den Warenkorb")</button>
-                </form>
-            </section>
-        }
+            }
+            <button type="submit" class="btn btn-success" id="add-to-cart-btn">@(Model.Language == "en" ? "Add to cart" : "In den Warenkorb")</button>
+        </form>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        (() => {
+            const totalContainer = document.getElementById("live-total");
+            if (!totalContainer) return;
+
+            const totalValue = document.getElementById("live-total-value");
+            const addToCartButton = document.getElementById("add-to-cart-btn");
+            const requiredHint = document.getElementById("required-groups-hint");
+            const basePrice = Number.parseFloat(totalContainer.dataset.basePrice || "0");
+            const language = totalContainer.dataset.language || "de";
+            const radios = Array.from(document.querySelectorAll(".js-option-radio"));
+            const requiredGroupNames = new Set(
+                radios
+                    .filter(r => (r.dataset.requiredGroup || "false") === "true")
+                    .map(r => r.dataset.group || "")
+                    .filter(Boolean)
+            );
+
+            const locale = language === "en" ? "en-US" : "de-DE";
+            const formatter = new Intl.NumberFormat(locale, {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            });
+
+            const refresh = () => {
+                let optionsTotal = 0;
+                const selectedRequiredGroups = new Set();
+
+                radios.forEach((radio) => {
+                    if (!radio.checked) {
+                        return;
+                    }
+
+                    const delta = Number.parseFloat(radio.dataset.price || "0");
+                    if (!Number.isNaN(delta)) {
+                        optionsTotal += delta;
+                    }
+
+                    if ((radio.dataset.requiredGroup || "false") === "true" && radio.dataset.group) {
+                        selectedRequiredGroups.add(radio.dataset.group);
+                    }
+                });
+
+                const total = basePrice + optionsTotal;
+                totalValue.textContent = `${formatter.format(total)} EUR`;
+
+                const allRequiredSelected = requiredGroupNames.size === 0 || selectedRequiredGroups.size === requiredGroupNames.size;
+                if (addToCartButton) {
+                    addToCartButton.disabled = !allRequiredSelected;
+                }
+                if (requiredHint) {
+                    requiredHint.style.display = allRequiredSelected ? "none" : "block";
+                }
+            };
+
+            radios.forEach(r => r.addEventListener("change", refresh));
+            refresh();
+        })();
+    </script>
+}
